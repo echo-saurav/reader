@@ -17,6 +17,8 @@ Selfhosted pdf reader, focused on reading pdf from mobile device
 - [ ] options to show last page
 - [ ] translation
 - [ ] bookmark pages
+- [ ] tts page reading
+
 ## bugs and others
 - [ ] empty backend response
 - [ ] all user setting api endpoint
