@@ -105,6 +105,7 @@ def images_inside_page(xref):
         xref=xref)
     if image is not None:
         response = Response(image, mimetype='image/png')
+        response.headers['Cache-Control'] = 'max-age=86400'
         return response
     else:
         return "Image not found"

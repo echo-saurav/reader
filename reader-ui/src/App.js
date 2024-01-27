@@ -5,7 +5,7 @@ import {
   Routes,
 } from "react-router-dom";
 
-import Home from "./components/Home"
+import Home from "./components/Home/Home"
 import Book from "./components/book/Book";
 import Settings from "./components/Settings";
 import Login from "./components/Login/Login"

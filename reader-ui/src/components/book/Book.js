@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { getBookFromBackend, getPageFromBackend, page_limit, setProgressToBackend } from "../utils/backend";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, FloatingPanel, Image, ImageViewer, InfiniteScroll, Input, List, NavBar, Popup, Space, Toast } from "antd-mobile";
+import { AutoCenter, Button, FloatingPanel, Image, ImageViewer, InfiniteScroll, Input, List, NavBar, Popup, Space, Toast } from "antd-mobile";
 import "./Book.css"
 import { UpOutline } from "antd-mobile-icons";
 import SettingsSheet from "./SettingsSheet";
@@ -10,7 +10,7 @@ import Page from "./Page";
 import { API } from "../utils/Variables";
 
 export default function Book() {
-  const scrollOffset = -70
+  const scrollOffset = -45
   const [contents, setContents] = useState([])
   const [book_info, setBookInfo] = useState({})
   const [lastPos, setLastPos] = useState(0)
@@ -31,7 +31,7 @@ export default function Book() {
       if (info && info.length > 0) {
         setBookInfo(info[0])
         console.log(info[0])
-        
+
       }
 
     }).then(() => {
@@ -218,11 +218,18 @@ export default function Book() {
 
 
       {hasMorePrevious() &&
-        <Button block
-          id="loadMoreButton"
-          onClick={() => { loadMorePreviousPage() }}
-          color='primary'
-          size='large' >Load previous page</Button>}
+        <AutoCenter>
+
+          <Button
+            shape="rounded"
+            size="small"
+            style={{ marginTop: "70px" }}
+            id="loadMoreButton"
+            onClick={() => { loadMorePreviousPage() }}
+            color='primary'
+          >Load previous pages</Button>
+        </AutoCenter>
+      }
 
       <div id="pages">
 
