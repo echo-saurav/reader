@@ -39,12 +39,16 @@ export default function Home() {
     let lastBookId = ""
 
     if (books && books.length > 0) {
-      lastBookId = books[books.length - 1].book_id
+      lastBookId = books[0].id
+      console.log("id",lastBookId)
+      console.log("bokos",books)
     } else {
       lastBookId = ""
+      console.log("no last book id",books )
     }
 
-    getBooksFromBackend(lastBookId, uid).then((res) => {
+    await getBooksFromBackend(lastBookId, uid).then((res) => {
+      console.log("adding new books",res)
       setBooks([...books, ...res.books])
       setCount(res.count)
     }).catch(e => {
