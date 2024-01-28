@@ -33,7 +33,8 @@ class DB:
         if start_book_id:
             pipline.append({
                 '$match': {
-                    '_id': {'$gte': start_book_id}
+                    '_id': {'$gte': ObjectId(start_book_id)}
+                    # '_id': ObjectId(book_id)
                 }
             })
         pipline.extend([
