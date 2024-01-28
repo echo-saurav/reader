@@ -39,9 +39,9 @@ export default function Home() {
     let lastBookId = ""
 
     if (books && books.length > 0) {
-      lastBookId = books[0].id
+      lastBookId = books[books.length-1].id
       console.log("id",lastBookId)
-      console.log("bokos",books)
+      console.log("books",books)
     } else {
       lastBookId = ""
       console.log("no last book id",books )
