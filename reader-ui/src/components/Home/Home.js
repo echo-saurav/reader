@@ -38,17 +38,15 @@ export default function Home() {
     // get last book id for pagination
     let lastBookId = ""
 
-    // if (books && books.length > 0) {
-    //   lastBookId = books[books.length - 1].book_id
-    // } else {
-    //   lastBookId = ""
-    // }
+    if (books && books.length > 0) {
+      lastBookId = books[books.length - 1].book_id
+    } else {
+      lastBookId = ""
+    }
 
     getBooksFromBackend(lastBookId, uid).then((res) => {
-      console.log("adding new books")
       setBooks([...books, ...res.books])
-      // setCount(res.count)
-      setCount(1000)
+      setCount(res.count)
     }).catch(e => {
       console.log(e)
       setBooks([])
@@ -133,6 +131,7 @@ export default function Home() {
                 ))}
             </Space>
 
+            <p>Totoal books {count}</p>
             <h1>New books</h1>
             <div>
               <Space block wrap direction='horizontal'>
