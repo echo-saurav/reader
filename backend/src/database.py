@@ -32,11 +32,11 @@ class DB:
         pipline = []
         if start_book_id:
             pipline.append({
-                '$match': {
-                    '_id': {'$gte': ObjectId(start_book_id)}
-                    # '_id': ObjectId(book_id)
-                }
+                "$match": {
+                    "_id": {"$gt": ObjectId(start_book_id)},
+                },
             })
+
         pipline.extend([
             {
                 '$limit': limit
