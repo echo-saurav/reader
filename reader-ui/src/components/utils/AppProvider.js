@@ -1,11 +1,13 @@
 import { createContext, useEffect, useState } from "react"
 
 const LOG_IN = "isLoggedIn"
+const ADMIN = "isAdmin"
 const THEME = "theme"
 
 export const AppContext = createContext()
 export const AppProvider = ({ children }) => {
     const [uid, setUid] = useState(localStorage.getItem(LOG_IN) ? localStorage.getItem(LOG_IN) : false)
+    const [isAdmin, setIsAdmin] = useState(localStorage.getItem(ADMIN) ? localStorage.getItem(ADMIN) : false)
     const [isDarkTheme, setDarkTheme] = useState(localStorage.getItem(THEME) === "dark" ? true : false)
     const [isMobile, setMobile] = useState(true)
     const [fontSize, setFontSize] = useState(16)
@@ -23,6 +25,7 @@ export const AppProvider = ({ children }) => {
 
     const onLogout = () => {
         localStorage.removeItem(LOG_IN)
+        localStorage.removeItem(ADMIN)
         setUid(false)
     }
 
@@ -63,6 +66,7 @@ export const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             isDarkTheme, onToggleTheme, // theme
             uid, onLogin, onLogout,  // login
+            isAdmin,setIsAdmin,
             isMobile,
             fontSize, setFontSize,
             ocr,setOcr,

@@ -25,7 +25,7 @@ export default function BookItem({ item, index }) {
         <div key={index} onClick={() => { goToBook(item.settings, item.id) }}
              style={{ width: "140px", padding: "10px", overflow: "hidden" }}>
 
-            <Image src={`${API}/${item.cover}`} />
+            <Image src={`${API}/${item.cover}/t`} />
             <ProgressBar percent={getProgress(item.settings, item.page_no)} rounded={false} />
             <p style={{ margin: '3px' }} >total page: {item.page_no}</p>
             <h3 style={{ margin: '0' }}>{item.name}</h3>
