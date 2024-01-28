@@ -37,6 +37,7 @@ function App() {
             <Route path="/book/:book_id/:page_no" element={<Book />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/login" element={<Login />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

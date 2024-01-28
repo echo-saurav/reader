@@ -1,20 +1,18 @@
 import { CapsuleTabs } from "antd-mobile"
 
-export default function Caps() {
-    const tabs = [
-        { "title": "All Books" },
-        { "title": "Read Books" },
-        { "title": "Unread Books" },
-        { "title": "Processing" },
-        { "title": "Bookmarks" },
-        { "title": "Users" }
-    ]
+export default function HomeCaps({ tabs, activeKey, onChange }) {
+
     return (
-        <CapsuleTabs>
+        <CapsuleTabs
+            activeKey={activeKey}
+            onChange={(e) => {
+                onChange(e)
+            }}
+        >
             {tabs.map((item, index) => (
                 <CapsuleTabs.Tab
                     title={item.title}
-                    style={{maxWidth:"150px"}}
+                    style={{ maxWidth: "150px" }}
                     key={index} />
             ))}
         </CapsuleTabs>
