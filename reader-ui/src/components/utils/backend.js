@@ -2,7 +2,7 @@
 import { API } from "./Variables";
 
 export const page_limit = 5
-export const book_limit = 1000
+export const book_limit = 20
 
 export const signIn = (username, password) => {
     const payload = JSON.stringify({
@@ -52,7 +52,7 @@ export const setProgressToBackend = (book_id, uid, progress) => {
         "progress": progress,
         "book_id": book_id
     })
-    console.log("progress", payload)
+
     return fetch(`${API}/user/progress`, {
         method: "POST",
         body: payload,
@@ -61,7 +61,7 @@ export const setProgressToBackend = (book_id, uid, progress) => {
         }
 
     }).then((response) => {
-        console.log("progress", response)
+
         return response.json()
     }).catch(e => console.log(e))
 

@@ -1,6 +1,5 @@
 import { Button, Card, Form, Input, Toast } from "antd-mobile";
 import "./Login.css"
-import { EyeInvisibleOutline, EyeOutline } from "antd-mobile-icons";
 import { useContext, useState } from "react";
 import { login } from "../utils/backend";
 import { AppContext } from "../utils/AppProvider";
@@ -16,23 +15,25 @@ export default function Login() {
   const onClickLogin = () => {
 
     login(username, password).then((res) => {
-      const uid = res['uid']
-      console.log("login uid", uid)
+      console.log("login",res["_id"]["$oid"])
 
-      if (uid) {
-        onLogin(uid)
+      if(res._id){
+        const uid = res._id.$oid
+        const is_admin = res.is_admin
+        onLogin(uid,is_admin)
+
         Toast.show({
           content: 'you are logged in!',
           position: 'bottom',
         })
         navigate("/")
-
-      }else{
-        Toast.show({
-          content: 'login failed!',
-          position: 'bottom',
-        })
+        return
       }
+      
+      Toast.show({
+        content: 'login failed!',
+        position: 'bottom',
+      })
 
     })
 

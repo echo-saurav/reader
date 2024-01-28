@@ -18,9 +18,11 @@ export const AppProvider = ({ children }) => {
     const [imageDarkMode,setImageDarkMode]= useState(true)
     const [clickToLargeImage,setClickToLargeImage] = useState(false)
 
-    const onLogin = (uid) => {
+    const onLogin = (uid,is_admin) => {
         localStorage.setItem(LOG_IN, uid) 
         setUid(uid)
+        localStorage.setItem(ADMIN, uid)
+        setIsAdmin(is_admin)
     }
 
     const onLogout = () => {

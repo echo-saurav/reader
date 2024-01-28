@@ -14,7 +14,6 @@ PORT = os.getenv(key='PORT', default=5500)
 username = os.getenv(key='USER_NAME', default="demouser")
 password = os.getenv(key='USER_PASSWORD', default="demouser")
 book_dir = os.getenv(key='BOOK_DIR', default="./data")
-print(f"username: {username}, pass: {password}, book dir : {book_dir}")
 
 # Flask App setup____________________________________________________
 app = Flask(__name__)
@@ -30,7 +29,7 @@ DB_USERNAME = os.getenv(key='DB_USERNAME', default="root")
 DB_PASSWORD = os.getenv(key='DB_PASSWORD', default="example")
 DB_HOST = os.getenv(key='DB_HOST', default='localhost')
 DB_PORT = os.getenv(key='DB_PORT', default='27018')
-db = DB(username=DB_USERNAME, password=DB_PASSWORD,host=DB_HOST , port=DB_PORT)
+db = DB(username=DB_USERNAME, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT)
 
 scanner = Scanner()
 pdfScan = PDFScan(db, book_dir)
@@ -142,9 +141,9 @@ def login():
 
     res = db.get_user(username, password)
     if res:
-        return {"uid": res}
+        return res
     else:
-        return {"uid": False}
+        return {"_id": False}
 
 
 # user settings
@@ -187,7 +186,6 @@ def set_progress():
     return {"res": res}
 
 
-
 if __name__ == '__main__':
     new_user = db.create_user(username, password)
-    app.run(debug=True, host='0.0.0.0', port=PORT)
+    app.run(debug=True, host='0.0.0.0', port=PORT, threaded=True)

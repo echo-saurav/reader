@@ -24,8 +24,19 @@ class DB:
         })
         return str(res.upserted_id)
 
+    def get_books_count(self):
+        c = self.books.count_documents({})
+        return c
+
     def get_books(self, start_book_id=None, user_id=None, limit=20):
-        books = self.books.aggregate([
+        pipline = []
+        if start_book_id:
+            pipline.append({
+                '$match': {
+                    '_id': {'$gte': start_book_id}
+                }
+            })
+        pipline.extend([
             {
                 '$limit': limit
             },
@@ -64,14 +75,11 @@ class DB:
                     'as': 'settings'
                 }
             },
-            {
-                '$project': {
-                    "_id": 0,
-                    "settings": {"_id": 0}
-                }
-            }
         ])
-        return list(books)
+
+        books = self.books.aggregate(pipline)
+        count = self.books.count_documents({})
+        return dumps({"books": books, "count": count})
 
     def get_book(self, book_id):
         book = self.books.find_one({"_id": ObjectId(book_id)})
@@ -186,7 +194,7 @@ class DB:
         })
         print("get user", res)
         if res:
-            return str(res.get("_id"))
+            return dumps(res)
         else:
             return None
 
@@ -227,12 +235,3 @@ class DB:
         self.user_settings = db['user_settings']
         info = client.server_info()
         pprint.pprint(info)
-
-    # {
-    # 	$lookup: {
-    #     from: "user_settings",
-    #     localField: {_id: ObjectId('65b37eeb3afc6d8875d5c6fb')},
-    #     foreignField: "book_id",
-    #     as: "result"
-    # 	}
-    # }

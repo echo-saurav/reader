@@ -1,4 +1,4 @@
-import { Button, PullToRefresh, SearchBar, Space } from 'antd-mobile'
+import { Button, InfiniteScroll, PullToRefresh, SearchBar, Space } from 'antd-mobile'
 import { useContext, useEffect, useState } from 'react';
 import { getBooksFromBackend } from '../utils/backend';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,7 @@ import BookItem from './BookItem';
 export default function Home() {
   const [tabPosition, setTabPosition] = useState('0')
   const [books, setBooks] = useState([])
+  const [count, setCount] = useState(0)
   const { uid, isAdmin } = useContext(AppContext)
   const navigate = useNavigate()
 
@@ -22,7 +23,7 @@ export default function Home() {
     { "title": "Bookmarks" },
     { "title": "Users" }
   ]
-    : [ 
+    : [
       { "title": "Home" },
       { "title": "Currently reading" },
       { "title": "Unread Books" },
@@ -37,14 +38,20 @@ export default function Home() {
     // get last book id for pagination
     let lastBookId = ""
 
-    if (books && books.length > 0) {
-      lastBookId = books[books.length - 1].book_id
-    } else {
-      lastBookId = ""
-    }
+    // if (books && books.length > 0) {
+    //   lastBookId = books[books.length - 1].book_id
+    // } else {
+    //   lastBookId = ""
+    // }
 
     getBooksFromBackend(lastBookId, uid).then((res) => {
-      setBooks(res)
+      console.log("adding new books")
+      setBooks([...books, ...res.books])
+      // setCount(res.count)
+      setCount(1000)
+    }).catch(e => {
+      console.log(e)
+      setBooks([])
     })
   }
 
@@ -98,64 +105,77 @@ export default function Home() {
 
   return (
     <div style={{ padding: "10px" }}>
-      <PullToRefresh
+      {/* <PullToRefresh
         onRefresh={async () => {
           console.log("refresh")
           await fetchBooks()
         }}
         renderText={status => <h3>Refreshing...</h3>}
-      >
-        {/* Top bar */}
-        <div style={{
-          position: "fixed", top: '0', width: '100%', left: '0',
-          display: "flex", background: 'var(--adm-color-background)'
-        }}>
-          <SearchBar placeholder='search books and text' style={{ padding: "10px", flex: '1' }} />
-          <Button
-            onClick={() => { navigate("/settings") }}
-            size='small' style={{ margin: "10px" }} color='primary'>
-            <AppstoreOutline />
-          </Button>
-        </div>
-
-        {/* books */}
-        <div style={{ marginTop: "40px" }}>
-          <HomeCaps tabs={tabs} activeKey={tabPosition} onChange={setTabPosition} />
+      > */}
 
 
-          {tabPosition === "0" ?
-            // for home
+      {/* books */}
+      <div style={{ marginTop: "40px" }}>
+        <HomeCaps tabs={tabs} activeKey={tabPosition} onChange={setTabPosition} />
 
-            <Space direction='vertical' >
-              
-              <h1>Last read</h1>
-              <Space block wrap direction='horizontal'>
 
-                {books.filter(item => isStartedReading(item))
-                  .map((item, index) => (
-                    <BookItem item={item} index={index} key={index} />
-                  ))}
-              </Space>
+        {tabPosition === "0" ?
+          // for home
 
-              <h1>New books</h1>
+          <Space direction='vertical' >
+
+            <h1>Last read</h1>
+            <Space block wrap direction='horizontal'>
+
+              {books.filter(item => isStartedReading(item))
+                .map((item, index) => (
+                  <BookItem item={item} index={index} key={index} />
+                ))}
+            </Space>
+
+            <h1>New books</h1>
+            <div>
               <Space block wrap direction='horizontal'>
                 {books.map((item, index) => (
                   <BookItem item={item} index={index} key={index} />
                 ))}
               </Space>
-            </Space> :
 
-            // for other tab
-            <Space wrap block >
-              {getFilteredBooks().map((item, index) => (
-                <BookItem item={item} index={index} key={index} />
-              ))}
-            </Space>
+              <InfiniteScroll
+                threshold={0}
+                loadMore={() => { return fetchBooks() }}
+                hasMore={count > books.length} >
+                {count > books.length ? <h1>Loading</h1> : <h1>End page</h1>}
+              </InfiniteScroll>
+            </div>
 
-          }
-        </div>
+          </Space> :
 
-      </PullToRefresh>
+          // for other tab
+          <Space wrap block >
+            {getFilteredBooks().map((item, index) => (
+              <BookItem item={item} index={index} key={index} />
+            ))}
+
+          </Space>
+
+
+        }
+      </div>
+
+      {/* </PullToRefresh> */}
+      {/* Top bar */}
+      <div style={{
+        position: "fixed", top: '0', width: '100%', left: '0',
+        display: "flex", background: 'var(--adm-color-background)'
+      }}>
+        <SearchBar placeholder='search books and text' style={{ padding: "10px", flex: '1' }} />
+        <Button
+          onClick={() => { navigate("/settings") }}
+          size='small' style={{ margin: "10px" }} color='primary'>
+          <AppstoreOutline />
+        </Button>
+      </div>
     </div>
   );
 }
