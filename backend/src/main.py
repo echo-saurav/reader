@@ -3,7 +3,6 @@ from flask import Flask, Response
 from flask_cors import CORS
 from flask import request
 import logging
-from bson.json_util import dumps
 from DirWatcher import DirWatcher
 from database import DB
 from Scan import Scanner
@@ -81,14 +80,21 @@ def pages(book_id, page_no):
 
 # pages image
 @app.route('/book/image/<book_id>/<page_no>', methods=["GET"])
-def page_image(book_id, page_no):
+@app.route('/book/image/<book_id>/<page_no>/<is_thumb>', methods=["GET"])
+def page_image(book_id, page_no, is_thumb=None):
     filter_book = db.get_book(book_id=book_id)
     if not filter_book:
         return "no image"
     path = filter_book.get("path", None)
     if path:
-        image = pdfScan.get_page_image(pdf_path=path,
-                                       page_num=page_no)
+        if is_thumb == "t":
+            image = pdfScan.get_page_image(pdf_path=path,
+                                           page_num=page_no,
+                                           is_thumb=True)
+        else:
+            image = pdfScan.get_page_image(pdf_path=path,
+                                           page_num=page_no,
+                                           is_thumb=False)
         if image is not None:
             response = Response(image, mimetype='image/png')
             response.headers['Cache-Control'] = 'max-age=86400'
@@ -178,26 +184,8 @@ def set_progress():
     res = db.set_progress(user_id, book_id, progress)
     return {"res": res}
 
-# @app.route('/user/pdfText', methods=["POST"])
-# def set_pdf_text():
-#     data = request.get_json()
-#     user_id = data.get("user_id", None)
-#     book_id = data.get("book_id", None)
-#     pdf_text = data.get("pdf_text", False)
-#     res = db.set_progress(user_id, book_id, progress)
-#     return {"res": res}
-#
-# @app.route('/user/inverseDark', methods=["POST"])
-# def set_inverse_dark():
-#     data = request.get_json()
-#     user_id = data.get("user_id", None)
-#     book_id = data.get("book_id", None)
-#     inverse_dark = data.get("inverse_dark", False)
-#     res = db.set_progress(user_id, book_id, progress)
-#     return {"res": res}
 
 
 if __name__ == '__main__':
     new_user = db.create_user(username, password)
-    print("new user", new_user)
     app.run(debug=True, host='0.0.0.0', port=PORT)

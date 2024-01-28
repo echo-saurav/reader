@@ -48,7 +48,7 @@ class PDFScan:
     def get_ocr_text(self, pdf_path, page_num):
         pdf_file = fitz.open(pdf_path)
         pdf_page = pdf_file[int(page_num)]
-        pixmap = pdf_page.get_pixmap(dpi=300)
+        pixmap = pdf_page.get_pixmap(dpi=self.page_dpi)
         image_text = ""
         with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp_file:
             pixmap.save(tmp_file.name)
@@ -91,10 +91,13 @@ class PDFScan:
         image = self.convert_pixmap_to_image_binary(pixmap)
         return image
 
-    def get_page_image(self, pdf_path, page_num):
+    def get_page_image(self, pdf_path, page_num, is_thumb=True):
         pdf_file = fitz.open(pdf_path)
         pdf_page = pdf_file[int(page_num)]
-        pixmap = pdf_page.get_pixmap(dpi=300)
+        if is_thumb:
+            pixmap = pdf_page.get_pixmap(dpi=self.thumb_dpi)
+        else:
+            pixmap = pdf_page.get_pixmap(dpi=self.page_dpi)
         image_binary = self.convert_pixmap_to_image_binary(pixmap)
         return image_binary
 
@@ -115,3 +118,6 @@ class PDFScan:
         self.BOOK_DIR = book_dir
         self.LANG = lang
         self.db = database
+        # other vars
+        self.page_dpi = 300
+        self.thumb_dpi = 50

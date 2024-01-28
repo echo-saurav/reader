@@ -158,14 +158,21 @@ class DB:
             })
         return res
 
-    def create_user(self, username, password):
+    def create_user(self, username, password, is_admin=False):
         check_old_users = self.get_user(username, password)
         if not check_old_users:
             try:
-                res = self.users.insert_one({
-                    "username": username,
-                    "password": password
-                })
+                if is_admin:
+                    res = self.users.insert_one({
+                        "username": username,
+                        "password": password
+                    })
+                else:
+                    res = self.users.insert_one({
+                        "username": username,
+                        "password": password,
+                        "is_admin": True
+                    })
                 return str(res.inserted_id)
             except Exception as e:
                 print(e)

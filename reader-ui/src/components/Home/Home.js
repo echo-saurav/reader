@@ -10,18 +10,27 @@ import BookItem from './BookItem';
 export default function Home() {
   const [tabPosition, setTabPosition] = useState('0')
   const [books, setBooks] = useState([])
-  const { uid } = useContext(AppContext)
-
+  const { uid, isAdmin } = useContext(AppContext)
   const navigate = useNavigate()
-  const tabs = [
+
+  const tabs = isAdmin ? [ // user tab only for admin
     { "title": "Home" },
-    { "title": "Read Books" },
+    { "title": "Currently reading" },
     { "title": "Unread Books" },
     { "title": "All Books" },
     { "title": "Processing" },
     { "title": "Bookmarks" },
     { "title": "Users" }
   ]
+    : [ 
+      { "title": "Home" },
+      { "title": "Currently reading" },
+      { "title": "Unread Books" },
+      { "title": "All Books" },
+      { "title": "Processing" },
+      { "title": "Bookmarks" },
+
+    ]
 
 
   const fetchBooks = async () => {
@@ -44,7 +53,7 @@ export default function Home() {
       return false
     } else if (book.settings[0].progress === 0) {
       return false
-    } else if (book.settings[0].progress > 0) {
+    } else if (book.settings[0].progress > 1) {
       return true
     }
     return false
@@ -117,14 +126,11 @@ export default function Home() {
           {tabPosition === "0" ?
             // for home
 
-
             <Space direction='vertical' >
+              
               <h1>Last read</h1>
               <Space block wrap direction='horizontal'>
 
-                {/* {getFilteredBooks().map((item, index) => (
-                <BookItem item={item} index={index} key={index} />
-              ))} */}
                 {books.filter(item => isStartedReading(item))
                   .map((item, index) => (
                     <BookItem item={item} index={index} key={index} />
@@ -133,17 +139,12 @@ export default function Home() {
 
               <h1>New books</h1>
               <Space block wrap direction='horizontal'>
-
-                {/* {books.filter(item => isStartedReading(item))
-                .slice(4)
-                .map((item, index) => (
-                  <BookItem item={item} index={index} key={index} />
-                ))} */}
                 {books.map((item, index) => (
                   <BookItem item={item} index={index} key={index} />
                 ))}
               </Space>
             </Space> :
+
             // for other tab
             <Space wrap block >
               {getFilteredBooks().map((item, index) => (
