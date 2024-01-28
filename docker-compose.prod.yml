@@ -10,10 +10,14 @@ services:
       dockerfile: Dockerfile
     environment:
       - USER_NAME=demouser
+      - USER_PASSWORD=demouser
+      - BOOK_DIR=/books
+      - DB_HOST=192.168.0.120
+      - DB_PORT=27018
     ports:
-      - "5500:8000"
+      - "5500:5500"
     volumes:
-      - ./books:/books
+      - ~/storage/public/books:/books:ro
 
   reader-ui:
     container_name: reader-ui
@@ -31,8 +35,8 @@ services:
     image: mongo
     container_name: reader-db
     restart: unless-stopped
-    # ports:
-    #   - 27017:27017
+    ports:
+      - 27018:27017
     volumes:
       - ./data/prod:/data/db
       # - /etc/timezone:/etc/timezone:ro
@@ -40,22 +44,22 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
 
-  reader-mongo-express:
-    image: mongo-express
-    container_name: reader-mongo-express
-    depends_on:
-      - reader-db 
-    restart: unless-stopped
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@reader-db:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin 
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-      ME_CONFIG_MONGODB_SERVER: mongo
+  # reader-mongo-express:
+  #   image: mongo-express
+  #   container_name: reader-mongo-express
+  #   depends_on:
+  #     - reader-db 
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8081:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
+  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@reader-db:27017/
+  #     ME_CONFIG_BASICAUTH_USERNAME: admin 
+  #     ME_CONFIG_BASICAUTH_PASSWORD: admin
+  #     ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+  #     ME_CONFIG_MONGODB_SERVER: mongo
 
 
 

@@ -2,7 +2,7 @@
 import { API } from "./Variables";
 
 export const page_limit = 5
-export const book_limit = 30
+export const book_limit = 1000
 
 export const signIn = (username, password) => {
     const payload = JSON.stringify({

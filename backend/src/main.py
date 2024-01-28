@@ -15,6 +15,7 @@ PORT = os.getenv(key='PORT', default=5500)
 username = os.getenv(key='USER_NAME', default="demouser")
 password = os.getenv(key='USER_PASSWORD', default="demouser")
 book_dir = os.getenv(key='BOOK_DIR', default="./data")
+print(f"username: {username}, pass: {password}, book dir : {book_dir}")
 
 # Flask App setup____________________________________________________
 app = Flask(__name__)
@@ -28,11 +29,12 @@ FRONTEND_HOST = os.getenv(key='FRONTEND_HOST', default="http://localhost:3000")
 # database setup
 DB_USERNAME = os.getenv(key='DB_USERNAME', default="root")
 DB_PASSWORD = os.getenv(key='DB_PASSWORD', default="example")
+DB_HOST = os.getenv(key='DB_HOST', default='localhost')
 DB_PORT = os.getenv(key='DB_PORT', default='27018')
-db = DB(username=DB_USERNAME, password=DB_PASSWORD, port=DB_PORT)
+db = DB(username=DB_USERNAME, password=DB_PASSWORD,host=DB_HOST , port=DB_PORT)
 
 scanner = Scanner()
-pdfScan = PDFScan(db, "/data")
+pdfScan = PDFScan(db, book_dir)
 
 dirWatcher = DirWatcher(book_dir, BACKEND_HOST, db)
 
@@ -43,7 +45,7 @@ dirWatcher = DirWatcher(book_dir, BACKEND_HOST, db)
 def books():
     data = request.get_json()
     start_book_id = data.get("start_book_id", None)
-    limit = data.get("limit", 20)
+    limit = data.get("limit", 1000)
     user_id = data.get("user_id", None)
     res = db.get_books(start_book_id=start_book_id, user_id=user_id, limit=limit)
 
