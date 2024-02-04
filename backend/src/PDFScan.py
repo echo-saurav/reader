@@ -15,7 +15,7 @@ class PDFScan:
         print(f"start: {start}, end:{end}, limit {new_limit}")
 
         for i in range(start, end):
-            xrefs = self.get_image_xrefs(pdf_path=pdf_path, page_num=i)
+            xrefs = self.get_image_xrefs(pdf_path=pdf_path, page_num=i,book_id=book_id)
             # ocr_text = self.pdfScan.get_ocr_text(pdf_path="src/behave.pdf", page_num=i)
             ocr_text = ""
             page_content = self.get_page_text(pdf_path=pdf_path, page_num=i)
@@ -32,7 +32,7 @@ class PDFScan:
         return res
 
     @staticmethod
-    def get_image_xrefs(pdf_path, page_num):
+    def get_image_xrefs(pdf_path, page_num,book_id):
         pdf_file = fitz.open(pdf_path)
         page = pdf_file[page_num]
         images = page.get_images()
@@ -41,7 +41,7 @@ class PDFScan:
         for i, image in enumerate(images):
             xref = image[0]  # XREF number of the image
             # xrefs.append(f"/book/xref/{xref}")
-            xrefs.append(f"http://localhost:5500/book/xref/{xref}")
+            xrefs.append(f"http://localhost:5500/book/xref/{book_id}/{xref}")
 
         return xrefs
 

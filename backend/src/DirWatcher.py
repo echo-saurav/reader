@@ -51,8 +51,7 @@ class DirWatcher:
                 name=file_name,
                 description="",
                 page_no=total_page,
-                cover="",
-                progress=0
+                cover=""
             )
             self.db.update_book_by_object(
                 {"_id": ObjectId(book_id)},
@@ -68,5 +67,7 @@ class DirWatcher:
         # initial scan
         database.remove_all_books()
         database.remove_all_users()
+        database.remove_all_user_settings()
+        database.remove_all_bookmarks()
         self.scan_file()
         # self.schedule_watchdog_task()

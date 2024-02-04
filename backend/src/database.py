@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pymongo import MongoClient
 from bson import ObjectId
 from bson.json_util import dumps
@@ -5,10 +7,10 @@ import pprint
 
 
 class DB:
-    def insert_book(self, name, description, page_no, cover, progress, path):
+    def insert_book(self, name, description, page_no, cover, path):
         res = self.books.insert_one({
             "name": name, "description": description, "page_no": page_no,
-            "cover": cover, "progress": progress, "path": path
+            "cover": cover, "path": path
         })
         return str(res.inserted_id)
 
@@ -82,10 +84,86 @@ class DB:
         count = self.books.count_documents({})
         return dumps({"books": books, "count": count})
 
+    def get_currently_read_books(self, user_id=None, limit=20):
+        books = self.user_settings.aggregate([
+            {
+                '$match': {
+                    'user_id': user_id
+                }
+            },
+            {
+                '$sort': {
+                    "update_time": -1
+                }
+            },
+            {
+                '$limit': limit
+            },
+            {
+                '$lookup': {
+                    'from': 'books',
+                    'let': {
+                        'settings_book_id': '$book_id'
+                    },
+                    'pipeline': [
+                        {
+                            '$addFields': {
+                                'id': {
+                                    '$toString': '$_id'
+                                }
+                            }
+                        }, {
+                            '$match': {
+                                '$expr': {
+                                    '$eq': [
+                                        '$id', '$$settings_book_id'
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    'as': 'result'
+                }
+            }
+        ])
+        return dumps(books)
+
     def get_book(self, book_id):
         book = self.books.find_one({"_id": ObjectId(book_id)})
         print("book", book)
         return book
+
+    # Bookmarks settings ____________________________________________________________
+    def set_bookmark(self, user_id, book_id, page_no, text):
+        filter_obj = {"user_id": user_id, "book_id": book_id, "page_no": page_no}
+        res = self.bookmarks.update_one(filter_obj, {"$set": {
+            "user_id": user_id, "book_id": book_id, "page_no": page_no,
+            "text": text, "update_time": datetime.now()
+        }}, upsert=True)
+        print("set bookmark",res)
+        return str(res.upserted_id)
+
+    def get_bookmarks_by_books(self, user_id, book_id):
+        bookmarks = self.bookmarks \
+            .find({"user_id": user_id, "book_id": book_id})
+        return dumps(bookmarks)
+
+    def get_all_bookmarks(self, user_id, limit=20):
+        bookmarks = self.bookmarks \
+            .find({"user_id": user_id}).limit(limit)
+        return dumps(bookmarks)
+
+    def query_bookmarks(self, user_id, query, limit):
+        bookmarks = self.bookmarks \
+            .find(
+            {
+                "text": {'$regex': query, '$options': 'i'},
+                "user_id": user_id
+            }) \
+            .limit(limit)
+        return dumps(bookmarks)
+
+    # ___________________________________________________________________________________
 
     def get_book_with_settings(self, book_id, user_id):
         if not (book_id and user_id):
@@ -137,6 +215,12 @@ class DB:
         ])
 
         return dumps(book)
+
+    def query_on_book_name(self, query, limit):
+        books = self.books.find({"name": {'$regex': query, '$options': 'i'}}) \
+            .limit(limit)
+
+        return dumps(books)
 
     def update_page(self, book_id, page_no, page_content):
         if page_no:
@@ -208,11 +292,20 @@ class DB:
         res = self.users.delete_many({})
         return res
 
+    def remove_all_user_settings(self):
+        res = self.user_settings.delete_many({})
+        return res
+
+    def remove_all_bookmarks(self):
+        res = self.bookmarks.delete_many({})
+        return res
+
     def set_progress(self, user_id, book_id, progress):
         filter_object = {"user_id": user_id, "book_id": book_id}
         res = self.user_settings.update_one(
-            filter_object, {"$set": {
-                "progress": progress
+            filter_object, {"$set": {   
+                "progress": progress,
+                "update_time": datetime.now()
             }}, upsert=True)
         if res:
             print("set progress", str(res.upserted_id))
@@ -234,5 +327,6 @@ class DB:
         self.pages = db['pages']
         self.users = db['users']
         self.user_settings = db['user_settings']
+        self.bookmarks = db['bookmarks']
         info = client.server_info()
         pprint.pprint(info)

@@ -43,11 +43,74 @@ dirWatcher = DirWatcher(book_dir, BACKEND_HOST, db)
 def books():
     data = request.get_json()
     start_book_id = data.get("start_book_id", None)
-    limit = data.get("limit", 1000)
+    limit = data.get("limit", 20)
     user_id = data.get("user_id", None)
     res = db.get_books(start_book_id=start_book_id, user_id=user_id, limit=limit)
-
     return res
+
+
+@app.route('/books/current', methods=["POST"])
+def current_books():
+    data = request.get_json()
+    limit = data.get("limit", 20)
+    user_id = data.get("user_id", None)
+    res = db.get_currently_read_books(user_id, limit)
+    return res
+
+
+@app.route('/books/query', methods=["POST"])
+def query_books():
+    data = request.get_json()
+    limit = data.get("limit", 20)
+    # user_id = data.get("user_id", None)
+    query = data.get("query", "")
+    res = db.query_on_book_name(query, limit)
+    return res
+
+
+# Bookmarks settings ____________________________________________________________
+@app.route('/bookmark', methods=["POST"])
+def set_bookmark():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    book_id = data.get("book_id", None)
+    page_no = data.get("page_no", None)
+    text = data.get("text", None)
+    res = db.set_bookmark(user_id, book_id, page_no, text)
+    return {"res": res}
+
+
+@app.route('/bookmarks/get', methods=["POST"])
+def get_bookmarks():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    book_id = data.get("book_id", None)
+
+    res = db.get_bookmarks_by_books(user_id, book_id)
+    return res
+
+
+@app.route('/bookmarks/get/all', methods=["POST"])
+def get_all_bookmarks():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    limit = data.get("limit", 20)
+
+    res = db.get_all_bookmarks(user_id, limit=limit)
+    return res
+
+
+@app.route('/bookmarks/query', methods=["POST"])
+def query_bookmarks():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    limit = data.get("limit", 20)
+    query = data.get("query", "")
+    res = db.query_bookmarks(user_id, query, limit)
+    return res
+
+
+# ___________________________________________________________________________________
 
 
 # book information with user config
@@ -55,7 +118,6 @@ def books():
 def book(book_id):
     data = request.get_json()
     user_id = data.get("user_id", None)
-    print(f"book id :{book_id}, uid: {user_id}")
     res = db.get_book_with_settings(book_id=book_id, user_id=user_id)
     return res
 
@@ -66,17 +128,18 @@ def pages(book_id, page_no):
     data = request.get_json()
     limit = data.get("limit", 10)
     filter_book = db.get_book(book_id=book_id)
-    total_page = filter_book.get("page_no", 0)
-    pdf_path = filter_book.get("path", None)
+    if filter_book:
+        total_page = filter_book.get("page_no", 0)
+        pdf_path = filter_book.get("path", None)
 
-    if pdf_path:
-        res = pdfScan.get_page_api_response(
-            book_id=book_id, pdf_path=pdf_path,
-            page_no=int(page_no),
-            total_page=int(total_page), limit=int(limit))
-        return res
+        if pdf_path:
+            res = pdfScan.get_page_api_response(
+                book_id=book_id, pdf_path=pdf_path,
+                page_no=int(page_no),
+                total_page=int(total_page), limit=int(limit))
+            return res
     else:
-        return None
+        return []
 
 
 # pages image
@@ -105,15 +168,20 @@ def page_image(book_id, page_no, is_thumb=None):
 
 
 # images inside page
-@app.route('/book/xref/<xref>', methods=["GET"])
-def images_inside_page(xref):
-    image = pdfScan.get_image_from_xref(
-        pdf_path="src/behave.pdf",
-        xref=xref)
-    if image is not None:
-        response = Response(image, mimetype='image/png')
-        response.headers['Cache-Control'] = 'max-age=86400'
-        return response
+@app.route('/book/xref/<book_id>/<xref>', methods=["GET"])
+def images_inside_page(book_id,xref):
+    filter_book = db.get_book(book_id=book_id)
+    if not filter_book:
+        return "no image"
+    path = filter_book.get("path", None)
+    if path:
+        image = pdfScan.get_image_from_xref(
+            pdf_path=path,
+            xref=xref)
+        if image is not None:
+            response = Response(image, mimetype='image/png')
+            response.headers['Cache-Control'] = 'max-age=86400'
+            return response
     else:
         return "Image not found"
 
