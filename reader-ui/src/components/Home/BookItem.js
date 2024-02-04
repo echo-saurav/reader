@@ -1,12 +1,17 @@
-import { Ellipsis, Image, ProgressBar } from "antd-mobile"
 import { useNavigate } from "react-router-dom"
 import { API } from "../utils/Variables"
+import { Card, Progress } from "antd"
+
+import { Paragraph, Title } from "../../App"
 
 
 export default function BookItem({ item, index }) {
     const navigate = useNavigate()
     const goToBook = (settings, book_id) => {
+        console.log(settings)
+        console.log(book_id)
         if (settings && settings[0] && settings[0].progress && book_id) {
+
             navigate(`/book/${book_id}/${settings[0].progress}`)
         } else if (book_id) {
             navigate(`/book/${book_id}`)
@@ -20,17 +25,36 @@ export default function BookItem({ item, index }) {
             return 0
         }
     }
-    
+
     return (
-        <div key={index} onClick={() => { goToBook(item.settings, item.id) }}
-             style={{ width: "140px", padding: "10px", overflow: "hidden" }}>
 
-            <Image src={`${API}/${item.cover}/t`} />
-            <ProgressBar percent={getProgress(item.settings, item.page_no)} rounded={false} />
-            <p style={{ margin: '3px' }} >total page: {item.page_no}</p>
-            <h3 style={{ margin: '0' }}>{item.name}</h3>
-            <Ellipsis direction='end' content={item.description} rows={3} />
+        <Card hoverable={false}
+            size="small"
+            onClick={() => { goToBook(item.settings, item.id) }}
+            style={{ width: 170 }}
+            cover={
+                <>
+                    <img
+                        alt="cover"
+                        src={`${API}/${item.cover}/t`} />
+                    <Progress
+                        style={{ lineHeight: "0" }}
+                        strokeLinecap="square"
+                        percent={getProgress(item.settings, item.page_no)}
+                        showInfo={false} />
+                </>
+            }>
 
-        </div>
+            <Title style={{ margin: "0" }} level={5}>
+                {item.name}
+            </Title>
+            {item.description && <Paragraph>
+                {item.description}
+            </Paragraph>}
+
+        </Card>
+
+
+
     )
 }

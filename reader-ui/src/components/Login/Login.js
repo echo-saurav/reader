@@ -1,71 +1,73 @@
-import { Button, Card, Form, Input, Toast } from "antd-mobile";
-import "./Login.css"
 import { useContext, useState } from "react";
 import { login } from "../utils/backend";
 import { AppContext } from "../utils/AppProvider";
 import { useNavigate } from "react-router-dom";
+import { App, Button, Card, Col, Input, Row, Space } from "antd";
+
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { Title } from "../../App";
 export default function Login() {
-
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const {onLogin} = useContext(AppContext)
-  const navigate = useNavigate()
-
+  const [username, setUsername] = useState("demouser");
+  const [password, setPassword] = useState("demouser");
+  const { onLogin } = useContext(AppContext);
+  const { message } = App.useApp()
+  const navigate = useNavigate();
 
   const onClickLogin = () => {
-
     login(username, password).then((res) => {
-      console.log("login",res["_id"]["$oid"])
+      console.log("res", res);
 
-      if(res._id){
-        const uid = res._id.$oid
-        const is_admin = res.is_admin
-        onLogin(uid,is_admin)
+      if (res._id) {
+        const uid = res._id.$oid;
+        const is_admin = res.is_admin;
 
-        Toast.show({
-          content: 'you are logged in!',
-          position: 'bottom',
-        })
-        navigate("/")
-        return
+        onLogin(uid, is_admin);
+        
+        message.success("you are logged in!")
+        navigate("/");
+        return;
       }
-      
-      Toast.show({
-        content: 'login failed!',
-        position: 'bottom',
-      })
-
-    })
-
-
-  }
+      message.error("login failed!")
+    });
+  };
 
   return (
-
-    <div className="login">
-      <div className="centered-div">
-
+    <Row justify="center" align="middle" style={{ height: "100dvh" }}>
+      <Col xs={23} md={12} lg={8} xxl={6}>
         <Card>
-          <Form layout='vertical'>
-            <Form.Item label='Username' >
-              <Input placeholder='username' clearable
-                value={username}
-                onChange={(e) => { setUsername(e) }} />
-            </Form.Item>
-            <Form.Item label='Password' >
-              <Input placeholder='password' clearable type='password'
-                value={password}
-                onChange={(e) => { setPassword(e) }} />
-            </Form.Item>
-            <Form.Item>
-              <Button onClick={() => { onClickLogin() }}>Login</Button>
-            </Form.Item>
-          </Form>
-
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Title level={2}>Login</Title>
+            <Input
+              placeholder="Username"
+              size="large"
+              prefix={<UserOutlined />}
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+              }}
+            />
+            <Input.Password
+              placeholder="Password"
+              value={password}
+              size="large"
+              prefix={<LockOutlined />}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+            <Button
+              size="large"
+              block
+              onClick={() => {
+                onClickLogin();
+              }}
+              type="primary"
+            >
+              Login
+            </Button>
+          </Space>
         </Card>
-
-      </div>
-    </div>
-
+      </Col>
+    </Row>
   );
 }

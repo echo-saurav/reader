@@ -1,10 +1,11 @@
-import { Button, Input, List, SearchBar, Slider, Space, Switch, Toast } from "antd-mobile";
-import { useContext, useState } from "react";
+
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../utils/AppProvider";
 import { useNavigate } from "react-router-dom";
+import { Button, Drawer, InputNumber, List, Slider, Switch } from "antd";
 
 
-export default function SettingsSheet({ currentPage = 1, totalPage = 0, book_id, setPopupVisible }) {
+export default function SettingsSheet({ currentPage = 1, totalPage = 0, book_id, visible, setVisibility }) {
     const {
         clickToLargeImage, setClickToLargeImage,
         imageDarkMode, setImageDarkMode,
@@ -13,19 +14,24 @@ export default function SettingsSheet({ currentPage = 1, totalPage = 0, book_id,
         pdfText, setPdfText,
         ocr, setOcr,
         pdfImage, setPdfImage,
-        pageImage, setPageImage } = useContext(AppContext)
+        pageImage, setPageImage,
+        showToast, isMobile } = useContext(AppContext)
 
     const [goTo, setGoto] = useState(currentPage)
     const navigate = useNavigate()
+
+    useEffect(() => {
+        setGoto(currentPage)
+    }, [currentPage])
 
     const goToInput = () => {
         const page_number = parseInt(goTo)
         if (page_number) {
             if (page_number > 0 && totalPage >= page_number) {
                 navigate(`/book/${book_id}/${goTo}`)
-                setPopupVisible(false)
+                setVisibility(false)
             } else {
-                Toast.show({ content: 'Please choose valid page no', position: 'bottom' })
+                showToast("error", 'Please choose valid page no')
             }
         } else {
             setGoto(currentPage)
@@ -34,82 +40,74 @@ export default function SettingsSheet({ currentPage = 1, totalPage = 0, book_id,
     }
 
     return (
-        <div style={{overflow:"scroll", height:"100%"}}>
-            <List>
-                <List.Item>
-                    <SearchBar placeholder="search text" />
-                </List.Item>
-                <List.Item>
-                    <Button block >Show Chapters</Button>
-                </List.Item>
-                <List.Item
-                    extra={
-                        <Space direction="horizontal" justify='center' align="center">
-                            <Input onChange={(no) => { setGoto(no) }} value={goTo}
-                                placeholder={`between 1 to ${totalPage}`} type="number" />
-                            <Button onClick={() => { goToInput() }} color='primary' fill='solid'>Go</Button>
-                        </Space>
-                    } >
-                    Go to page
+        <Drawer
+            title="Settings"
+            open={visible}
+            placement={isMobile ? "bottom" : 'right'}
+            onClose={() => {
+                setVisibility(false)
+            }}>
+            <List >
+                <List.Item extra={
+                    <><InputNumber placeholder="page no"
+                        min={1} max={totalPage} onChange={(no) => { setGoto(no) }} value={goTo} />
+                        <Button onClick={() => { goToInput() }} color='primary' fill='solid'>Go</Button> </>
+                }>
+                    <List.Item.Meta title={`Jump to page (1 - ${totalPage})`} />
                 </List.Item>
                 <List.Item
                     extra={
                         <Switch checked={isDarkTheme} onChange={() => { onToggleTheme() }} />
                     } >
-                    Toggle dark theme
+                    <List.Item.Meta title="Toggle dark theme" />
+
                 </List.Item>
                 <List.Item>
-                    <p style={{ margin: '0' }}>{`Font size ${fontSize}`}</p>
+                    <List.Item.Meta title={`Font size ${fontSize}`} />
                 </List.Item>
-                <List.Item>
-                    <Slider
-                        value={fontSize}
-                        onChange={(e) => { setFontSize(e) }}
-                        step={1}
-                        min={10}
-                        max={35}
-                        ticks
-                    />
+                <Slider
+                    value={fontSize}
+                    onChange={(e) => { setFontSize(e) }}
+                    step={1}
+                    min={10}
+                    max={35}
+                    ticks
+                />
+                <List.Item extra={
+                    <Switch checked={imageDarkMode} onChange={() => { setImageDarkMode(!imageDarkMode) }} />
+                } >
+                    <List.Item.Meta title="Inverse image dark mode" />
+
                 </List.Item>
-                <List.Item
-                    extra={
-                        <Switch checked={imageDarkMode} onChange={() => { setImageDarkMode(!imageDarkMode) }} />
-                    } >
-                    Inverse image dark mode
-                </List.Item>
-                <List.Item
-                    extra={
-                        <Switch checked={clickToLargeImage} onChange={() => { setClickToLargeImage(!clickToLargeImage) }} />
-                    } >
-                    Click to fullscreen image
+                <List.Item extra={
+                    <Switch checked={clickToLargeImage} onChange={() => { setClickToLargeImage(!clickToLargeImage) }} />
+                }>
+                    <List.Item.Meta title="Click to fullscreen image" />
                 </List.Item>
 
-                <List.Item
-                    extra={
-                        <Switch checked={pdfText} onChange={() => { setPdfText(!pdfText) }} />
-                    } >
-                    Enable pdf text
+                <List.Item extra={
+                    <Switch checked={pdfText} onChange={() => { setPdfText(!pdfText) }} />
+                }>
+                    <List.Item.Meta title="Enable pdf text" />
+
                 </List.Item>
-                <List.Item
-                    extra={
-                        <Switch checked={pdfImage} onChange={() => { setPdfImage(!pdfImage) }} />
-                    } >
-                    Enable pdf images
+                <List.Item extra={
+                    <Switch checked={pdfImage} onChange={() => { setPdfImage(!pdfImage) }} />
+                }>
+                    <List.Item.Meta title="Enable pdf images" />
                 </List.Item>
-                <List.Item
-                    extra={
-                        <Switch checked={ocr} onChange={() => { setOcr(!ocr) }} />
-                    } >
-                    Enable pdf OCR texts
+                <List.Item extra={
+                    <Switch checked={ocr} onChange={() => { setOcr(!ocr) }} />
+                }>
+                    <List.Item.Meta title="Enable pdf OCR texts" />
                 </List.Item>
-                <List.Item
-                    extra={
-                        <Switch checked={pageImage} onChange={() => { setPageImage(!pageImage) }} />
-                    } >
-                    Enable pdf page image
+                <List.Item extra={
+                    <Switch checked={pageImage} onChange={() => { setPageImage(!pageImage) }} />
+                }>
+                    <List.Item.Meta title="Enable pdf page image" />
                 </List.Item>
             </List>
-        </div>
+        </Drawer>
     )
 
 }

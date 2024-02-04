@@ -1,20 +1,25 @@
-import { CapsuleTabs } from "antd-mobile"
+import { Radio, Space } from "antd"
 
 export default function HomeCaps({ tabs, activeKey, onChange }) {
 
     return (
-        <CapsuleTabs
-            activeKey={activeKey}
-            onChange={(e) => {
-                onChange(e)
-            }}
-        >
-            {tabs.map((item, index) => (
-                <CapsuleTabs.Tab
-                    title={item.title}
-                    style={{ maxWidth: "150px" }}
-                    key={index} />
-            ))}
-        </CapsuleTabs>
+        <Space style={{ marginTop: "10px" }}>
+            <Radio.Group
+                buttonStyle="solid"
+                value={activeKey}
+                onChange={(v) => {
+                    onChange(v.target.value)
+                }}>
+                {tabs.map((item, index) => (
+                    <Radio.Button
+                        key={item.key}
+                        value={item.key}>
+                        {item.title}
+                    </Radio.Button>
+                ))}
+            </Radio.Group>
+        </Space>
+
+
     )
 }

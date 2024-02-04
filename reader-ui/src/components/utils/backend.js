@@ -3,6 +3,9 @@ import { API } from "./Variables";
 
 export const page_limit = 5
 export const book_limit = 20
+export const waitBeforeUpdatePage= 500
+const other_books_limit = 10
+const bookmarks_limit = 30
 
 export const signIn = (username, password) => {
     const payload = JSON.stringify({
@@ -68,9 +71,9 @@ export const setProgressToBackend = (book_id, uid, progress) => {
 }
 
 
-export const getBooksFromBackend = (book_id, uid) => {
+export const getBooksFromBackend = (lastBookId, uid) => {
     const payload = JSON.stringify({
-        "start_book_id": book_id,
+        "start_book_id": lastBookId,
         "limit": book_limit,
         "user_id": uid
     })
@@ -90,6 +93,146 @@ export const getBooksFromBackend = (book_id, uid) => {
     }).catch(e => console.log(e))
 
 }
+
+export const getCurrentBooksFromBackend = (uid) => {
+    const payload = JSON.stringify({
+        // "start_book_id": lastBookId,
+        "limit": other_books_limit,
+        "user_id": uid
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/books/current`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
+export const saveBookmarkToBackend=(text,uid,book_id,page_no)=>{    
+    const payload = JSON.stringify({
+        "book_id": book_id,
+        "user_id": uid,
+        "page_no":parseInt(page_no),
+        "text":text
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/bookmark`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return false
+
+    }).catch(e => console.log(e))
+}
+
+export const getBookmarksFromBackend = (uid,book_id) => {
+    const payload = JSON.stringify({
+        // "start_book_id": lastBookId,
+        "book_id": book_id,
+        "user_id": uid
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/bookmarks`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
+export const getAllBookmarksFromBackend = (uid) => {
+    const payload = JSON.stringify({
+        // "start_book_id": lastBookId,
+        "limit": other_books_limit,
+        "user_id": uid
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/bookmarks/get/all`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
+export const queryBookmarksFromBackend = (uid,query,) => {
+    const payload = JSON.stringify({
+        "limit": bookmarks_limit,
+        "user_id": uid,
+        "query":query
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/bookmarks/query`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
+
+export const queryBooksFromBackend = (query, uid, limit = 10) => {
+    const payload = JSON.stringify({
+        "query": query,
+        "limit":limit,
+        "user_id": uid
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/books/query`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
 
 export const getBookFromBackend = (book_id, uid) => {
     const payload = JSON.stringify({
@@ -117,7 +260,7 @@ export const getPageFromBackend = (book_id, page_no, limit = page_limit) => {
         "book_id": book_id,
         "limit": limit
     })
-    console.log("get page payload", payload)
+    // console.log("get page payload", payload)
     return fetch(`${API}/book/${book_id}/${page_no}`, {
         method: "POST",
         body: payload,

@@ -1,60 +1,74 @@
-import { Divider, Image, Space } from "antd-mobile";
-import { useContext } from "react";
+import { useContext, } from "react";
 import { AppContext } from "../utils/AppProvider";
 import { API } from "../utils/Variables";
+import { Divider, Image, } from "antd";
+import { Paragraph, Text, } from "../../App";
 
 
-export default function Page({ content, onShowImage }) {
+export default function Page({ content }) {
     const { fontSize, pdfText, ocr, pdfImage, pageImage, imageDarkMode, clickToLargeImage } = useContext(AppContext)
 
     return (
-        <div key={content.page_no} id={content.page_no} style={{minHeight:"90vh"}}>
-
-            {/* pdf text */}
-            {(content.page_content && pdfText) &&
-                <div style={{ marginTop: "10px" }}>
-                    <h3 style={{ color: "gray" }}>Text from pdf</h3>
-                    {content.page_content.split("\n\n").map((text, index) => (
-                        
-                         <p key={index} style={{ fontSize: `${fontSize}px` }}>
-                            {text}
-                        </p>
-                    ))}
-                </div>
-            }
+        <div key={content.page_no} id={content.page_no} style={{ minHeight: "90vh" }}>
 
             {/* pdf images */}
             {((content.images && content.images.length > 0) && pdfImage) &&
-                <div style={{ marginTop: "30px" }}>
-                    <h3 style={{ color: "gray" }}>Images from pdf</h3>
-                    <Space justify="center" block style={{ overflow: "scroll" }}>
-                        {content.images.map((image, index) => (
-
-                            <Image
+                <div style={{ marginTop: "10px" }}>
+                    <Text type="secondary" strong>
+                        Images from pdf
+                    </Text>
+                    <div style={{ marginTop: "10px" }}>
+                        <Image.PreviewGroup>
+                            {content.images.map((xref, index) => (
+                                <Image
+                                    preview={clickToLargeImage}
+                                    fallback={<Paragraph>Loading failed </Paragraph>}
+                                    style={{
+                                        width: "100%", maxWidth: "400px",
+                                        filter: imageDarkMode ? "invert(90%)" : "invert(0%)"
+                                    }}
+                                    key={index}
+                                    src={xref}
+                                />
+                            ))}
+                        </Image.PreviewGroup>
+                    </div>
+                </div>
+            }
+            {/* pdf text */}
+            {(content.page_content && pdfText) &&
+                <div style={{ marginTop: "10px" }}>
+                    <Text
+                        type="secondary" strong>
+                        Text from pdf
+                    </Text>
+                    <div style={{ marginTop: "20px" }}>
+                        {content.page_content.split("\n").map((text, index) => (
+                            <Paragraph
+                                key={index}
                                 style={{
-                                    width: "100%", maxWidth: "400px",
-                                    filter: imageDarkMode ? "invert(90%)" : "invert(0%)"
-                                }}
-                                key={index} onClick={() => {
-                                    if (clickToLargeImage) onShowImage(image)
-                                }} src={image} />
+                                    fontSize: `${fontSize}px`,
+                                    lineHeight: "18px"
+                                }}>
+                                {text}
+                            </Paragraph>
                         ))}
-                    </Space>
-
+                    </div>
                 </div>
             }
 
 
             {/* page image  */}
             {(content.page_image && pageImage) &&
-                <div style={{ marginTop: "30px" }}>
-                    <h3 style={{ color: "gray" }} >Pdf page as image</h3>
-                    <Image style={{ filter: imageDarkMode ? "invert(90%)" : "invert(0%)" }}
+                <div style={{ marginTop: "10px" }}>
+                    <Text type="secondary" strong>
+                        Pdf page as image
+                    </Text>
+                    <Image
+                        style={{ filter: imageDarkMode ? "invert(90%)" : "invert(0%)" }}
                         src={`${API}/${content.page_image}`}
-                        onClick={() => {
-                            if (clickToLargeImage) onShowImage(content.page_image)
-                        }} />
-
+                        preview={clickToLargeImage}
+                    />
                 </div>
             }
 
@@ -62,13 +76,18 @@ export default function Page({ content, onShowImage }) {
             {/* ocr text */}
             {(content.ocr_text && ocr) &&
                 <div style={{ marginTop: "30px" }}>
-                    <h3 style={{ color: "gray" }}>Pdf OCR texts</h3>
+
+                    <Text type="secondary" strong>Pdf OCR texts</Text>
 
                     {content.ocr_text.split("\n").map((text, index) => (
-
-                        <p key={index} style={{ fontSize: `${fontSize}px` }}>
+                        <Paragraph
+                            key={index}
+                            style={{
+                                fontSize: `${fontSize}px`,
+                                lineHeight: "18px"
+                            }}>
                             {text}
-                        </p>
+                        </Paragraph>
                     ))}
                 </div>
             }
@@ -78,3 +97,5 @@ export default function Page({ content, onShowImage }) {
         </div>
     )
 }
+
+
