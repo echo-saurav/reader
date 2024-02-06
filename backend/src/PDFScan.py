@@ -4,9 +4,24 @@ import pytesseract
 from database import DB
 from PIL import Image, UnidentifiedImageError
 import re
-
+from bson.json_util import dumps
 
 class PDFScan:
+    @staticmethod
+    def get_chapters(pdf_path):
+        pdf_file = fitz.open(pdf_path)
+        doc_outline = pdf_file.get_toc()
+        outlines = []
+
+        if len(doc_outline) > 0:
+            for level, title, page_no in doc_outline:
+                outlines.append({
+                    "level": level, "title": title, "page_no": page_no
+                })
+        pdf_file.close()
+
+        return dumps(outlines)
+
     def get_page_api_response(self, book_id, pdf_path, page_no, total_page, limit=10):
         res = []
         new_limit = limit if page_no + limit < total_page else total_page - page_no
@@ -15,7 +30,7 @@ class PDFScan:
         print(f"start: {start}, end:{end}, limit {new_limit}")
 
         for i in range(start, end):
-            xrefs = self.get_image_xrefs(pdf_path=pdf_path, page_num=i,book_id=book_id)
+            xrefs = self.get_image_xrefs(pdf_path=pdf_path, page_num=i, book_id=book_id)
             # ocr_text = self.pdfScan.get_ocr_text(pdf_path="src/behave.pdf", page_num=i)
             ocr_text = ""
             page_content = self.get_page_text(pdf_path=pdf_path, page_num=i)
@@ -32,7 +47,7 @@ class PDFScan:
         return res
 
     @staticmethod
-    def get_image_xrefs(pdf_path, page_num,book_id):
+    def get_image_xrefs(pdf_path, page_num, book_id):
         pdf_file = fitz.open(pdf_path)
         page = pdf_file[page_num]
         images = page.get_images()

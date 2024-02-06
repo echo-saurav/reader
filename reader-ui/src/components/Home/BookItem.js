@@ -11,7 +11,6 @@ export default function BookItem({ item, index }) {
         console.log(settings)
         console.log(book_id)
         if (settings && settings[0] && settings[0].progress && book_id) {
-
             navigate(`/book/${book_id}/${settings[0].progress}`)
         } else if (book_id) {
             navigate(`/book/${book_id}`)
@@ -30,7 +29,7 @@ export default function BookItem({ item, index }) {
 
         <Card hoverable={false}
             size="small"
-            onClick={() => { goToBook(item.settings, item.id) }}
+            onClick={() => { goToBook(item.settings, item._id.$oid) }}
             style={{ width: 170 }}
             cover={
                 <>

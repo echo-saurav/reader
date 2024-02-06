@@ -6,6 +6,7 @@ export default function HomeCaps({ tabs, activeKey, onChange }) {
         <Space style={{ marginTop: "10px" }}>
             <Radio.Group
                 buttonStyle="solid"
+                
                 value={activeKey}
                 onChange={(v) => {
                     onChange(v.target.value)

@@ -1,7 +1,7 @@
 
 import { API } from "./Variables";
 
-export const page_limit = 5
+export const page_limit = 10
 export const book_limit = 20
 export const waitBeforeUpdatePage= 500
 const other_books_limit = 10
@@ -117,7 +117,7 @@ export const getCurrentBooksFromBackend = (uid) => {
 
 }
 
-export const saveBookmarkToBackend=(text,uid,book_id,page_no)=>{    
+export const saveBookmarkToBackend=(text,uid,book_id,page_no)=>{
     const payload = JSON.stringify({
         "book_id": book_id,
         "user_id": uid,
@@ -140,6 +140,29 @@ export const saveBookmarkToBackend=(text,uid,book_id,page_no)=>{
     }).catch(e => console.log(e))
 }
 
+export const deleteBookmarkToBackend=(uid,book_id,page_no)=>{
+    const payload = JSON.stringify({
+        "book_id": book_id,
+        "user_id": uid,
+        "page_no":parseInt(page_no),
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/bookmark`, {
+        method: "DELETE",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return false
+
+    }).catch(e => console.log(e))
+}
+
+
 export const getBookmarksFromBackend = (uid,book_id) => {
     const payload = JSON.stringify({
         // "start_book_id": lastBookId,
@@ -147,7 +170,7 @@ export const getBookmarksFromBackend = (uid,book_id) => {
         "user_id": uid
     })
     // console.log("get books payload", payload)
-    return fetch(`${API}/bookmarks`, {
+    return fetch(`${API}/bookmarks/get`, {
         method: "POST",
         body: payload,
         headers: {
@@ -173,6 +196,24 @@ export const getAllBookmarksFromBackend = (uid) => {
     return fetch(`${API}/bookmarks/get/all`, {
         method: "POST",
         body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
+export const getChaptersFromBackend = (book_id) => {
+    
+    // console.log("get books payload", payload)
+    return fetch(`${API}/chapters/${book_id}`, {
+        method: "POST",
         headers: {
             "Content-Type": "application/json",
         }

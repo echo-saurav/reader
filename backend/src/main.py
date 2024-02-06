@@ -80,6 +80,17 @@ def set_bookmark():
     return {"res": res}
 
 
+@app.route('/bookmark', methods=["DELETE"])
+def delete_bookmark():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    book_id = data.get("book_id", None)
+    page_no = data.get("page_no", None)
+
+    res = db.delete_bookmark(user_id, book_id, page_no)
+    return {"res": res}
+
+
 @app.route('/bookmarks/get', methods=["POST"])
 def get_bookmarks():
     data = request.get_json()
@@ -112,6 +123,20 @@ def query_bookmarks():
 
 # ___________________________________________________________________________________
 
+@app.route('/chapters/<book_id>', methods=["POST"])
+def get_chapters(book_id):
+    filter_book = db.get_book(book_id=book_id)
+    if not filter_book:
+        return "no chapter"
+    pdf_path = filter_book.get("path", None)
+    if pdf_path:
+        res = pdfScan.get_chapters(pdf_path)
+        return res  
+
+    return "no chapter"
+
+
+# ___________________________________________________________________________________
 
 # book information with user config
 @app.route('/book/<book_id>', methods=["POST"])
@@ -169,7 +194,7 @@ def page_image(book_id, page_no, is_thumb=None):
 
 # images inside page
 @app.route('/book/xref/<book_id>/<xref>', methods=["GET"])
-def images_inside_page(book_id,xref):
+def images_inside_page(book_id, xref):
     filter_book = db.get_book(book_id=book_id)
     if not filter_book:
         return "no image"

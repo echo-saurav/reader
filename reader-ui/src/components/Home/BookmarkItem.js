@@ -1,15 +1,46 @@
-import { Image, Space } from "antd";
+import {     List, Space } from "antd";
 import { API } from "../utils/Variables";
+import { useNavigate } from "react-router-dom";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 
-export default function BookmarkItem({ book_id, page_no, text }) {
+export default function BookmarkItem({ minimal=false, book_info, page_no, text, book_id, onDelete, onEdit }) {
+    const navigate = useNavigate()
+
+    const onClick = () => {
+        navigate(`/book/${book_id}/${page_no}`)
+    }
     return (
-        <Space direction="vertical">
-            <h3>{text}</h3>
-            <p>Page: {page_no}</p>
-            <Image
-                width={100}
-                src={`${API}/book/image/${book_id}/0/t`} />
-        </Space>
+        <List.Item
+            actions={[
+                <Space onClick={() => { onDelete(book_id, page_no) }}
+                    style={{ cursor: "pointer" }} >
+                    <DeleteOutlined />
+                    Delete
+                </Space>,
+                <Space onClick={() => { onEdit(text, book_id, page_no) }}
+                    style={{ cursor: "pointer" }} >
+                    <EditOutlined />
+                    Edit
+                </Space>
+            ]}
+        >
+
+            {(book_info && book_info.length > 0) &&
+                <List.Item.Meta
+                    onClick={() => { onClick() }}
+                    // title={text? text :book_info[0].name }
+                    title={text}
+                    description={`${book_info[0].name} | Page ${page_no}`}
+                    avatar={!minimal &&
+                        <img
+                            alt="cover"
+                            width={50}
+                            src={`${API}/${book_info[0].cover}`}
+                        />
+                    }
+                />
+            }
+        </List.Item>
     )
 }

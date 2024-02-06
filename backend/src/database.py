@@ -140,17 +140,92 @@ class DB:
             "user_id": user_id, "book_id": book_id, "page_no": page_no,
             "text": text, "update_time": datetime.now()
         }}, upsert=True)
-        print("set bookmark",res)
+        print("set bookmark", res)
         return str(res.upserted_id)
 
+    def delete_bookmark(self, user_id, book_id, page_no):
+        filter_obj = {"user_id": user_id, "book_id": book_id, "page_no": page_no}
+        res = self.bookmarks.delete_one(filter_obj)
+        print("delete bookmark", res)
+        if res.deleted_count == 1:
+            return True
+        else:
+            return False
+
     def get_bookmarks_by_books(self, user_id, book_id):
-        bookmarks = self.bookmarks \
-            .find({"user_id": user_id, "book_id": book_id})
+        bookmarks = self.bookmarks.aggregate([
+            {
+                '$match': {
+                    'user_id': user_id,
+                    'book_id': book_id
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'books',
+                    'let': {
+                        'bookIdString': '$book_id'
+                    },
+                    'pipeline': [
+                        {
+                            '$addFields': {
+                                'id': {
+                                    '$toString': '$_id'
+                                }
+                            }
+                        }, {
+                            '$match': {
+                                '$expr': {
+                                    '$eq': [
+                                        '$id', '$$bookIdString'
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    'as': 'book_info'
+                }
+            }
+        ])
         return dumps(bookmarks)
+        # bookmarks = self.bookmarks \
+        #     .find({"user_id": user_id, "book_id": book_id})
+        # return dumps(bookmarks)
 
     def get_all_bookmarks(self, user_id, limit=20):
-        bookmarks = self.bookmarks \
-            .find({"user_id": user_id}).limit(limit)
+        bookmarks = self.bookmarks.aggregate([
+            {
+                '$match': {
+                    'user_id': user_id
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'books',
+                    'let': {
+                        'bookIdString': '$book_id'
+                    },
+                    'pipeline': [
+                        {
+                            '$addFields': {
+                                'id': {
+                                    '$toString': '$_id'
+                                }
+                            }
+                        }, {
+                            '$match': {
+                                '$expr': {
+                                    '$eq': [
+                                        '$id', '$$bookIdString'
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    'as': 'book_info'
+                }
+            }
+        ])
         return dumps(bookmarks)
 
     def query_bookmarks(self, user_id, query, limit):
@@ -303,7 +378,7 @@ class DB:
     def set_progress(self, user_id, book_id, progress):
         filter_object = {"user_id": user_id, "book_id": book_id}
         res = self.user_settings.update_one(
-            filter_object, {"$set": {   
+            filter_object, {"$set": {
                 "progress": progress,
                 "update_time": datetime.now()
             }}, upsert=True)

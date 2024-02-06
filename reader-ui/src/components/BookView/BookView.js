@@ -1,13 +1,13 @@
 import { App, Button, Col, Image, Row } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getBookFromBackend, getPageFromBackend, page_limit, setProgressToBackend, waitBeforeUpdatePage } from "../utils/backend";
+import { getBookFromBackend, getBookmarksFromBackend, getChaptersFromBackend, getPageFromBackend, page_limit, setProgressToBackend, waitBeforeUpdatePage } from "../utils/backend";
 import { AppContext } from "../utils/AppProvider";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 import Page from "../book/Page";
 import PageMenu from "./PageMenu";
-import { Title } from "../../App";
+import { Paragraph, Title } from "../../App";
 import { API } from "../utils/Variables";
 
 
@@ -16,6 +16,10 @@ export default function BookView() {
 
     const [book_info, setBookInfo] = useState({})
     const [contents, setContents] = useState([])
+    const [bookmarks, setBookmarks] = useState([])
+    const [chapters, setChapters] = useState([])
+    const [showBadge, setShowBadge] = useState(false)
+
     const [currentPage, setCurrentPage] = useState(0)
     const [lastPos, setLastPos] = useState(0)
     const { book_id, page_no = 1 } = useParams()
@@ -24,20 +28,37 @@ export default function BookView() {
 
     // initial loading pages
     useEffect(() => {
+
+        // load book info
         getBookFromBackend(book_id, uid).then((info) => {
             if (info && info.length > 0) {
                 setBookInfo(info[0])
             }
         }).then(() => {
+            // load page 
             getPageFromBackend(book_id, page_no).then((contents) => {
                 setContents(contents)
                 setCurrentPage(parseInt(page_no))
-
             })
+            // load bookmarks
+            updateBookmark()
+            updateChapters()
         })
+
     }, [])
 
-    
+    const updateBookmark = () => {
+        getBookmarksFromBackend(uid, book_id).then((res) => {
+            setBookmarks(res)       
+        })
+    }
+
+    const updateChapters=()=>{
+        getChaptersFromBackend(book_id).then((res)=>{
+            setChapters(res)
+        })
+    }
+
     const loadMorePreviousPage = () => {
         console.log("click")
         if (contents.length > 0) {
@@ -57,15 +78,15 @@ export default function BookView() {
     }
     const loadMoreNextPage = async () => {
         if (contents.length > 0) {
-          const last_page = parseInt(contents[contents.length - 1].page_no) + 1
-          console.log(contents)
-          await getPageFromBackend(book_id, last_page).then((new_contents) => {
-            // reset scroll to 0 if loading bottom elements
-            setContents([...contents, ...new_contents])
-            setLastPos(0)
-          })
+            const last_page = parseInt(contents[contents.length - 1].page_no) + 1
+            console.log(contents)
+            await getPageFromBackend(book_id, last_page).then((new_contents) => {
+                // reset scroll to 0 if loading bottom elements
+                setContents([...contents, ...new_contents])
+                setLastPos(0)
+            })
         }
-      }
+    }
 
     const hasMorePrevious = () => {
         if (contents.length > 0) {
@@ -94,7 +115,7 @@ export default function BookView() {
 
             if (book_info.page_no > last_page) {
                 return (
-                    <Row justify="center" align="middle">
+                    <Row justify="center" align="middle" style={{ margin: "30px" }}>
                         <Button
                             type="primary"
                             icon={<DownOutlined />}
@@ -129,6 +150,17 @@ export default function BookView() {
 
     }, [])
 
+    // check if this page bookmarked
+    useEffect(() => {
+        setShowBadge(false)
+        bookmarks.map(item => {
+            if (item.page_no === currentPage) {
+                setShowBadge(true)
+            }
+        })
+
+    }, [currentPage, bookmarks])
+
 
     // scroll to past position after loading new element on top
     useEffect(() => {
@@ -154,7 +186,6 @@ export default function BookView() {
 
     // update current page to backend 
     const updatePageView = () => {
-
         const parentDiv = document.getElementById('pages');
         const childDivs = parentDiv.children;
 
@@ -163,10 +194,14 @@ export default function BookView() {
             const isVisible = isElementInViewport(childDiv)
 
             if (isVisible) {
+                // update current page
                 setCurrentPage(parseInt(childDiv.id))
                 setProgressToBackend(book_id, uid, parseInt(childDiv.id))
+
             }
         }
+
+
     }
     const isElementInViewport = (el) => {
         const rect = el.getBoundingClientRect();
@@ -184,6 +219,10 @@ export default function BookView() {
                 book_id={book_id}
                 currentPage={currentPage}
                 book_info={book_info}
+                bookmarks={bookmarks}
+                chapters={chapters}
+                showBadge={showBadge}
+                updateBookmark={updateBookmark}
             />
 
             <Row justify="center" align="middle">
@@ -202,6 +241,17 @@ export default function BookView() {
                 </Col>
 
             </Row>
+
+            <div style={{
+                position: "fixed",
+                bottom: "0",
+                right: "0",
+                padding: "5px"
+            }}>
+                <Paragraph style={{ margin: "0" }}>
+                    {currentPage} / {book_info.page_no}
+                </Paragraph>
+            </div>
 
         </>
     )

@@ -7,9 +7,11 @@ import SearchBar from "./SearchBar";
 import { AppContext } from "../utils/AppProvider";
 import { Paragraph } from "../../App";
 import BookList from "./BookList";
-import { getBookFromBackend, getBookmarksFromBackend, getBooksFromBackend, getCurrentBooksFromBackend, queryBookmarksFromBackend, queryBooksFromBackend } from "../utils/backend";
-import { Button, Row } from "antd";
+import { getAllBookmarksFromBackend, getBookFromBackend, getBookmarksFromBackend, getBooksFromBackend, getCurrentBooksFromBackend, queryBookmarksFromBackend, queryBooksFromBackend } from "../utils/backend";
+import { Button, List, Row, Segmented } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import BookmarkItem from "./BookmarkItem";
+import BookmarkList from "./BookmarkList";
 
 export default function HomeNew() {
   const navigate = useNavigate();
@@ -21,10 +23,11 @@ export default function HomeNew() {
     { title: "All Books", key: "3" },
     { title: "Processing", key: "4" },
     { title: "Bookmarks", key: "5" },
-    // user tab only for admin
-    isAdmin && { title: "Users", key: "6" }
+
   ];
-  const [tabPosition, setTabPosition] = useState(tabs[0].key);
+  // user tab only for admin
+  if (isAdmin) tabs.push({ title: "Users", key: "6" })
+  const [tabPosition, setTabPosition] = useState(tabs[0].title);
 
   // list
   const [books, setBooks] = useState([]);
@@ -55,7 +58,6 @@ export default function HomeNew() {
     }
 
     await getBooksFromBackend(lastBookId, uid).then((res) => {
-
       setBooks([...books, ...res.books])
       setCount(res.count)
     }).catch(e => {
@@ -84,13 +86,21 @@ export default function HomeNew() {
       console.log(e)
       setBooks([])
     })
+
+    loadBookmarks()
+  }
+
+  const loadBookmarks = () => {
+    getAllBookmarksFromBackend(uid).then(res => {
+      setBookmarks(res)
+    })
   }
 
   const onQueryBooks = (newQuery) => {
 
     if (newQuery) {
       queryBookmarksFromBackend(uid, newQuery).then(res => {
-        console.log(res)
+
         if (res) {
           setQueryBookmarks(res)
         }
@@ -100,6 +110,7 @@ export default function HomeNew() {
 
       queryBooksFromBackend(newQuery, uid, 10).then(res => {
         setQueryBooks(res)
+        console.log("query", res)
 
       }).catch(e => {
         console.log(e)
@@ -113,12 +124,13 @@ export default function HomeNew() {
 
 
   const getTabView = () => {
-    if (tabPosition === tabs[0].key) {
+    if (tabPosition === tabs[0].title) {
       return (
         <>
           <BookList title={`Searching for ${query}`} books={queryBooks} />
           <BookList title="Currently read" books={currentBooks} />
-          <BookList title="Books" books={books} />
+          <BookmarkList bookmarks={bookmarks} loadBookmarks={loadBookmarks}/>
+          <BookList title="All Books" books={books} />
           {(count > books.length) &&
             <Row justify="center" align="middle" style={{ margin: "50px" }}>
               <Button onClick={() => { fetchBooks() }}
@@ -132,12 +144,12 @@ export default function HomeNew() {
         </>
       )
     }
-    else if (tabPosition === tabs[1].key) {
+    else if (tabPosition === tabs[1].title) {
       return (
         <BookList title="Currently read" books={currentBooks} />
       )
     }
-    else if (tabPosition === tabs[2].key) {
+    else if (tabPosition === tabs[2].title) {
       return (
         <>
           <BookList title="All Books" books={books} />
@@ -153,22 +165,37 @@ export default function HomeNew() {
         </>
       )
     }
-    else if (tabPosition === tabs[3].key) {
+    else if (tabPosition === tabs[3].title) {
       return (
         <BookList title="Processing books" books={processingBooks} />
       )
+    } else if (tabPosition === tabs[4].title) {
+      return (
+        <BookmarkList bookmarks={bookmarks} />
+      )
     }
   }
-
+  const get_tmp = () => {
+    const tmp = []
+    tabs.map(i => {
+      return tmp.push(i.title)
+    })
+    return tmp
+  }
   return (
     <div>
       <div style={{ margin: "13px" }}>
         <SearchBar onQueryBooks={onQueryBooks} query={query} />
-        <HomeCaps
-          tabs={tabs}
-          activeKey={tabPosition}
-          onChange={setTabPosition}
+        <Segmented
+          style={{
+            marginTop: "10px",
+            overflow: "scroll",
+            width: "95svw",
+          }}
+          options={get_tmp()}
+          onChange={value => { setTabPosition(value) }}
         />
+
         {getTabView()}
       </div>
     </div>
