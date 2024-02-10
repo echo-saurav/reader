@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { API } from "../utils/Variables"
-import { Card, Progress } from "antd"
+import { Card, List, Progress } from "antd"
 
 import { Paragraph, Title } from "../../App"
 
@@ -26,7 +26,6 @@ export default function BookItem({ item, index }) {
     }
 
     return (
-
         <Card hoverable={false}
             size="small"
             onClick={() => { goToBook(item.settings, item._id.$oid) }}
@@ -52,8 +51,5 @@ export default function BookItem({ item, index }) {
             </Paragraph>}
 
         </Card>
-
-
-
     )
 }

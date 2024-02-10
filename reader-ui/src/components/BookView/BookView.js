@@ -185,7 +185,7 @@ export default function BookView() {
 
 
     // update current page to backend 
-    const updatePageView = () => {
+    const updatePageView = async () => {
         const parentDiv = document.getElementById('pages');
         const childDivs = parentDiv.children;
 
@@ -196,7 +196,7 @@ export default function BookView() {
             if (isVisible) {
                 // update current page
                 setCurrentPage(parseInt(childDiv.id))
-                setProgressToBackend(book_id, uid, parseInt(childDiv.id))
+                await setProgressToBackend(book_id, uid, parseInt(childDiv.id))
 
             }
         }

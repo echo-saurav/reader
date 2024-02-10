@@ -6,6 +6,7 @@ from PIL import Image, UnidentifiedImageError
 import re
 from bson.json_util import dumps
 
+
 class PDFScan:
     @staticmethod
     def get_chapters(pdf_path):
@@ -21,6 +22,17 @@ class PDFScan:
         pdf_file.close()
 
         return dumps(outlines)
+
+    @staticmethod
+    def get_total_pages(pdf_path):
+        try:
+            doc = fitz.open(pdf_path)
+            total_pages = doc.page_count
+            doc.close()
+            return total_pages
+        except Exception as e:
+            print("total page", e)
+            return 0
 
     def get_page_api_response(self, book_id, pdf_path, page_no, total_page, limit=10):
         res = []

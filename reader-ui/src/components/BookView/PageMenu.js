@@ -65,18 +65,10 @@ export default function PageMenu({
                 totalPage={book_info.page_no}
                 book_id={book_id} />
 
-            {/* <BookmarkModal
-                setVisible={setBookmarkPopupVisible}
-                book_id={book_id}
-                page_no={currentPage}
-                visible={bookmarkPopupVisible} /> */}
-
             <ChapterList
                 loadBookmarks={updateBookmark}
                 bookmarks={bookmarks}
                 chapters={chapters}
-                book_id={book_id}
-                uid={uid}
                 page_no={currentPage}
                 visible={chaptersVisibility}
                 setVisibility={setChaptersVisibility}

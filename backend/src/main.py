@@ -5,7 +5,6 @@ from flask import request
 import logging
 from DirWatcher import DirWatcher
 from database import DB
-from Scan import Scanner
 from PDFScan import PDFScan
 
 # Settings___________________________________________________________
@@ -31,10 +30,9 @@ DB_HOST = os.getenv(key='DB_HOST', default='localhost')
 DB_PORT = os.getenv(key='DB_PORT', default='27018')
 db = DB(username=DB_USERNAME, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT)
 
-scanner = Scanner()
-pdfScan = PDFScan(db, book_dir)
+pdf_scan = PDFScan(db, book_dir)
 
-dirWatcher = DirWatcher(book_dir, BACKEND_HOST, db)
+dirWatcher = DirWatcher(book_dir, BACKEND_HOST, db, pdf_scan)
 
 
 # End Points_________________________________________________________
@@ -130,8 +128,8 @@ def get_chapters(book_id):
         return "no chapter"
     pdf_path = filter_book.get("path", None)
     if pdf_path:
-        res = pdfScan.get_chapters(pdf_path)
-        return res  
+        res = pdf_scan.get_chapters(pdf_path)
+        return res
 
     return "no chapter"
 
@@ -158,7 +156,7 @@ def pages(book_id, page_no):
         pdf_path = filter_book.get("path", None)
 
         if pdf_path:
-            res = pdfScan.get_page_api_response(
+            res = pdf_scan.get_page_api_response(
                 book_id=book_id, pdf_path=pdf_path,
                 page_no=int(page_no),
                 total_page=int(total_page), limit=int(limit))
@@ -177,13 +175,13 @@ def page_image(book_id, page_no, is_thumb=None):
     path = filter_book.get("path", None)
     if path:
         if is_thumb == "t":
-            image = pdfScan.get_page_image(pdf_path=path,
-                                           page_num=page_no,
-                                           is_thumb=True)
+            image = pdf_scan.get_page_image(pdf_path=path,
+                                            page_num=page_no,
+                                            is_thumb=True)
         else:
-            image = pdfScan.get_page_image(pdf_path=path,
-                                           page_num=page_no,
-                                           is_thumb=False)
+            image = pdf_scan.get_page_image(pdf_path=path,
+                                            page_num=page_no,
+                                            is_thumb=False)
         if image is not None:
             response = Response(image, mimetype='image/png')
             response.headers['Cache-Control'] = 'max-age=86400'
@@ -200,7 +198,7 @@ def images_inside_page(book_id, xref):
         return "no image"
     path = filter_book.get("path", None)
     if path:
-        image = pdfScan.get_image_from_xref(
+        image = pdf_scan.get_image_from_xref(
             pdf_path=path,
             xref=xref)
         if image is not None:
@@ -245,9 +243,9 @@ def user_settings():
     data = request.get_json()
     user_id = data.get("user_id", None)
     # res = db.get_user(user_id)
-    res = scanner.get_settings()
+    # res = scanner.get_settings()
 
-    return res
+    return {"settings": None}
 
 
 @app.route('/deleteAllBooks', methods=["POST"])
@@ -280,5 +278,5 @@ def set_progress():
 
 
 if __name__ == '__main__':
-    new_user = db.create_user(username, password)
+    new_user = db.create_user(username, password, True)
     app.run(debug=True, host='0.0.0.0', port=PORT, threaded=True)
