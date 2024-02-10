@@ -18,6 +18,7 @@ class DB:
                 "page_no": page_no,
                 "insert_time": datetime.now(),
                 "cover": f"/book/image/{str(book_id)}/0",
+                "processing": 100
             }
             }, upsert=True)
 
@@ -159,6 +160,31 @@ class DB:
             }
         ])
         books = self.user_settings.aggregate(pipline)
+        return dumps(books)
+
+    def get_processing_read_books(self, limit=20, last_id=None):
+        pipline = []
+        if last_id:
+            pipline.append({
+                "$match": {
+                    "_id": {"$gt": ObjectId(last_id)},
+                },
+            })
+
+        if limit:
+            pipline.append({
+                '$limit': limit
+            })
+
+        pipline.extend([
+            {
+                '$match': {
+                    "processing": {"$gt": 0},
+                }
+            }
+        ])
+
+        books = self.books.aggregate(pipline)
         return dumps(books)
 
     def get_book(self, book_id):
@@ -403,6 +429,12 @@ class DB:
 
         return None
 
+    def delete_user(self, user_id):
+        print("user delete", user_id)
+        res = self.users.delete_one({"_id": ObjectId(user_id)})
+        return dumps(res.deleted_count)
+        # return dumps(res)
+
     def get_user(self, username, password):
         res = self.users.find_one({
             "username": username,
@@ -413,6 +445,11 @@ class DB:
             return dumps(res)
         else:
             return None
+
+    def get_users(self):
+        # res = self.users.find({}, {"password": 0})
+        res = self.users.find({})
+        return dumps(res)
 
     def remove_all_books(self):
         res_books = self.books.delete_many({})

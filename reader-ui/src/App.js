@@ -1,8 +1,5 @@
 import "./App.css";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-
-import Home from "./components/Home/Home";
-import Book from "./components/book/Book";
 import Settings from "./components/Settings";
 import Login from "./components/Login/Login";
 import NotFound from "./components/NotFound";
@@ -10,7 +7,7 @@ import { AppContext, AppProvider } from "./components/utils/AppProvider";
 import { useContext } from "react";
 
 import { theme, ConfigProvider, Layout, Typography, App } from "antd";
-import HomeNew from "./components/Home/Homenew";
+import Home from "./components/Home/Home";
 import BookView from "./components/BookView/BookView";
 export const { Title, Paragraph, Text } = Typography;
 
@@ -37,8 +34,7 @@ function MainApp() {
             {uid ? (
               <Router>
                 <Routes>
-                  <Route path="/" element={<HomeNew />} />
-                  {/* <Route path="/" element={<Home />} /> */}
+                  <Route path="/" element={<Home />} />
                   <Route path="/book/:book_id" element={<BookView />} />
                   <Route path="/book/:book_id/:page_no" element={<BookView />} />
                   <Route path="/settings" element={<Settings />} />

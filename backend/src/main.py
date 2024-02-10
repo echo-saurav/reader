@@ -59,6 +59,16 @@ def current_books():
     return res
 
 
+@app.route('/books/processing', methods=["POST"])
+def processing_books():
+    data = request.get_json()
+    limit = data.get("limit", 20)
+    last_id = data.get("last_id", None)
+
+    res = db.get_processing_read_books(limit, last_id)
+    return res
+
+
 @app.route('/books/query', methods=["POST"])
 def query_books():
     data = request.get_json()
@@ -251,6 +261,32 @@ def user_settings():
     return {"settings": None}
 
 
+@app.route('/user/create', methods=["POST"])
+def create_user():
+    data = request.get_json()
+    username = data.get("username", None)
+    password = data.get("password", None)
+    is_admin = data.get("is_admin", False)
+
+    res = db.create_user(username, password, is_admin)
+    return {"res": res}
+
+
+@app.route('/user/delete', methods=["POST"])
+def delete_user():
+    data = request.get_json()
+    print("delete", data)
+    user_id = data.get("user_id", None)
+    res = db.delete_user(user_id)
+    return res
+
+
+@app.route('/users', methods=["POST"])
+def get_users():
+    res = db.get_users()
+    return res
+
+
 @app.route('/deleteAllBooks', methods=["POST"])
 def delete_books():
     res = db.remove_all_books()
@@ -278,15 +314,6 @@ def set_progress():
     progress = data.get("progress", 1)
     res = db.set_progress(user_id, book_id, progress)
     return {"res": res}
-
-
-count = 0
-
-
-def trigger():
-    global count
-    print("trigger", count)
-    count = count + 1
 
 
 # # background scheduler

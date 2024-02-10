@@ -1,5 +1,5 @@
 import { Affix, Flex, Input } from "antd";
-import { MenuOutlined, SearchOutlined } from "@ant-design/icons";
+import { MenuOutlined, SearchOutlined, SettingOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 export default function SearchBar({ query, onQueryBooks }) {
@@ -17,11 +17,16 @@ export default function SearchBar({ query, onQueryBooks }) {
           placeholder="Search books, bookmarks or text"
           prefix={<SearchOutlined />}
           suffix={
-            <MenuOutlined
-              onClick={() => {
-                navigate("/settings");
-              }}
-            />
+            // <MenuOutlined
+            //   onClick={() => {
+            //     navigate("/settings");
+            //   }}
+            // />
+            <SettingOutlined
+            onClick={() => {
+              navigate("/settings");
+            }}
+          />
           }
         />
       </Flex>

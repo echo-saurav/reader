@@ -1,54 +1,53 @@
 
-import { useContext, useEffect, useState } from 'react';
-import {
-  getAllBookmarksFromBackend, getBooksFromBackend, getCurrentBooksFromBackend,
-  queryBookmarksFromBackend, queryBooksFromBackend
-} from '../utils/backend';
-import { useNavigate } from 'react-router-dom';
-import { AppContext } from '../utils/AppProvider';
-import HomeCaps from './Caps';
-import BookItem from './BookItem';
-import BookmarkItem from './BookmarkItem';
-import { Affix, Divider, Flex, Input, Space } from 'antd';
-import { MenuOutlined, SearchOutlined } from '@ant-design/icons';
-import { Title } from '../../App';
+import { useContext, useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import HomeCaps from "./Caps";
+import SearchBar from "./SearchBar";
+import { AppContext } from "../utils/AppProvider";
+import { Paragraph } from "../../App";
+import BookList from "./BookList";
+import { getAllBookmarksFromBackend, getBookFromBackend, getBookmarksFromBackend, getBooksFromBackend, getCurrentBooksFromBackend, getProcessingBooksFromBackend, queryBookmarksFromBackend, queryBooksFromBackend } from "../utils/backend";
+import { Button, List, Row, Segmented } from "antd";
+import { DownOutlined } from "@ant-design/icons";
+import BookmarkItem from "./BookmarkItem";
+import BookmarkList from "./BookmarkList";
+import UserView from "../users/UserView";
 
-export default function Home() {
-  const [tabPosition, setTabPosition] = useState(0)
-  const [books, setBooks] = useState([])
-  const [currentBooks, setCurrentBooks] = useState([])
+export default function HomeNew() {
+  const navigate = useNavigate();
+  const { uid, isAdmin, isMobile } = useContext(AppContext);
 
-  const [queryBooks, setQueryBooks] = useState([])
-  const [queryBookmarks, setQueryBookmarks] = useState([])
-  const [bookmarks, setBookmarks] = useState([])
+  const tabs = [
+    { title: "Home", key: "1" },
+    { title: "Currently reading", key: "2" },
+    { title: "All Books", key: "3" },
+    { title: "Processing", key: "4" },
+    { title: "Bookmarks", key: "5" },
 
-  const [query, setQuery] = useState("")
-  const [count, setCount] = useState(0)
-  const { uid, isAdmin } = useContext(AppContext)
-  const navigate = useNavigate()
+  ];
+  // user tab only for admin
+  if (isAdmin) tabs.push({ title: "Users", key: "6" })
+  const [tabPosition, setTabPosition] = useState(tabs[0].title);
 
-  const tabs = isAdmin ? [ // user tab only for admin
-    { "title": "Home" },
-    { "title": "Currently reading" },
-    // { "title": "Unread Books" },
-    { "title": "All Books" },
-    { "title": "Processing" },
-    { "title": "Bookmarks" },
-    { "title": "Users" }
-  ]
-    : [
-      { "title": "Home" },
-      { "title": "Currently reading" },
-      // { "title": "Unread Books" },
-      { "title": "All Books" },
-      { "title": "Processing" },
-      { "title": "Bookmarks" },
+  // list
+  const [books, setBooks] = useState([]);
+  const [currentBooks, setCurrentBooks] = useState([]);
+  const [processingBooks, setProcessingBooks] = useState([]);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [queryBooks, setQueryBooks] = useState([]);
+  const [queryBookmarks, setQueryBookmarks] = useState([]);
 
-    ]
+  const [query, setQuery] = useState("");
+  const [count, setCount] = useState(0);
 
+
+  useEffect(() => {
+    fetchBooks()
+
+  }, [])
 
   const fetchBooks = async () => {
-    // get last book id for pagination
     let lastBookId = ""
 
     if (books && books.length > 0) {
@@ -57,11 +56,9 @@ export default function Home() {
       console.log("books", books)
     } else {
       lastBookId = ""
-
     }
 
     await getBooksFromBackend(lastBookId, uid).then((res) => {
-
       setBooks([...books, ...res.books])
       setCount(res.count)
     }).catch(e => {
@@ -69,8 +66,8 @@ export default function Home() {
       setBooks([])
     })
 
-    await getCurrentBooksFromBackend(uid).then((res) => {
-      console.log(res)
+
+    await getCurrentBooksFromBackend(uid,2).then((res) => {
 
       if (res && res.length > 0) {
         const tmp = []
@@ -78,13 +75,11 @@ export default function Home() {
         for (const item of res) {
           const r = item.result
 
-
           if (r && r.length > 0) {
             r[0].settings = [item]
             tmp.push(r[0])
           }
         }
-
         setCurrentBooks(tmp)
       }
 
@@ -93,9 +88,18 @@ export default function Home() {
       setBooks([])
     })
 
-    await getAllBookmarksFromBackend(uid).then(res => {
-      console.log("bookmarks", res)
+    loadBookmarks()
+    loadProcessingBook()
+  }
+
+  const loadBookmarks = () => {
+    getAllBookmarksFromBackend(uid,2).then(res => {
       setBookmarks(res)
+    })
+  }
+  const loadProcessingBook=()=>{
+    getProcessingBooksFromBackend(null,20).then(res=>{
+      console.log("processing".res)
     })
   }
 
@@ -103,15 +107,17 @@ export default function Home() {
 
     if (newQuery) {
       queryBookmarksFromBackend(uid, newQuery).then(res => {
-        console.log(res)
+
         if (res) {
           setQueryBookmarks(res)
         }
       }).catch(e => {
         setQueryBookmarks([])
       })
+
       queryBooksFromBackend(newQuery, uid, 10).then(res => {
         setQueryBooks(res)
+        console.log("query", res)
 
       }).catch(e => {
         console.log(e)
@@ -122,140 +128,88 @@ export default function Home() {
     setQuery(newQuery)
   }
 
-  const isStartedReading = (book) => {
-    if (!book.settings || !book.settings.length > 0) {
-      return false
-    } else if (book.settings[0].progress === 0) {
-      return false
-    } else if (book.settings[0].progress > 1) {
-      return true
+
+
+  const getTabView = () => {
+    if (tabPosition === tabs[0].title) {
+      return (
+        <>
+          <BookList title={`Searching for ${query}`} books={queryBooks} />
+          <BookList title="Currently read" books={currentBooks} />
+          <BookmarkList bookmarks={bookmarks} loadBookmarks={loadBookmarks}/>
+          <BookList title="All Books" books={books} />
+          {(count > books.length) &&
+            <Row justify="center" align="middle" style={{ margin: "50px" }}>
+              <Button onClick={() => { fetchBooks() }}
+                type="primary"
+                icon={<DownOutlined />}>
+                Load more books
+              </Button>
+            </Row>
+          }
+
+        </>
+      )
     }
-    return false
+    else if (tabPosition === tabs[1].title) {
+      return (
+        <BookList title="Currently read" books={currentBooks} />
+      )
+    }
+    else if (tabPosition === tabs[2].title) {
+      return (
+        <>
+          <BookList title="All Books" books={books} />
+          {(count > books.length) &&
+            <Row justify="center" align="middle" style={{ margin: "50px" }}>
+              <Button onClick={() => { fetchBooks() }}
+                type="primary"
+                icon={<DownOutlined />}>
+                Load more books
+              </Button>
+            </Row>
+          }
+        </>
+      )
+    }
+    else if (tabPosition === tabs[3].title) {
+      return (
+        <BookList title="Processing books" books={processingBooks} />
+      )
+    } else if (tabPosition === tabs[4].title) {
+      return (
+        <BookmarkList bookmarks={bookmarks} />
+      )
+    }
+    else if (tabPosition === tabs[5].title) {
+      return (
+        <UserView/>
+      )
+    }
   }
-
-  const isProcessing = (book) => {
-    if (!book.processing) {
-      return false
-    } else if (parseInt(book.processing) > 0) {
-      return true
-    }
-    return false
+  const get_tmp = () => {
+    const tmp = []
+    tabs.map(i => {
+      return tmp.push(i.title)
+    })
+    return tmp
   }
-  const getFilteredBooks = () => {
-    // home
-    if (tabPosition === 0) {
-      return books.map((item, index) => (
-        <BookItem item={item} index={index} key={index} />
-      ))
-    }
-    // read
-    else if (tabPosition === 1) {
-      return currentBooks.map((item, index) => (
-        <BookItem item={item} index={index} key={index} />
-      ))
-    }
-    // unread
-    // else if (tabPosition === "2") {
-    //   return unreadBooks
-    // }
-    // all
-    else if (tabPosition === 2) {
-      return books
-    }
-    // processing
-    else if (tabPosition === 3) {
-      return books.filter(item => isProcessing(item))
-    }
-    // bookmarks
-    else if (tabPosition === 4) {
-      return bookmarks.map((item, index) => (
-        <BookmarkItem book_id={item.book_id}
-          page_no={item.page_no}
-          text={item.text}
-          key={index} />
-      ))
-
-    }
-    return []
-  }
-
-
-  useEffect(() => {
-    fetchBooks()
-  }, [])
-
   return (
-    <div style={{ padding: "10px" }} >
-      <Affix offsetTop={10} style={{ marginBottom: "10px" }}>
-        <Flex>
-          <Input
-            size='large'
-            onChange={(e) => { onQueryBooks(e.target.value) }}
-            value={query}
-            placeholder='Search books, bookmarks and also text'
-            prefix={<SearchOutlined />}
-            suffix={
-              <MenuOutlined
-                onClick={() => { navigate("/settings") }} />
-            }
-          />
-        </Flex>
-      </Affix>
+    <div>
+      <div style={{ margin: "13px" }}>
+        <SearchBar onQueryBooks={onQueryBooks} query={query} />
+        <Segmented
+          style={{
+            marginTop: "10px",
+            overflow: "scroll",
+            width: "95svw",
+          }}
+          options={get_tmp()}
+          onChange={value => { setTabPosition(value) }}
+        />
 
-      {/* books */}
-
-      <HomeCaps tabs={tabs} activeKey={tabPosition} onChange={setTabPosition} />
-
-      {tabPosition === 0 ?
-        // for home
-
-        <Space direction='vertical' >
-
-          {queryBooks.length > 0 && <>
-            <Title level={2}>Searching for {query}</Title>
-            <Space align='start' size={10} wrap>
-              {queryBooks
-                .map((item, index) => (
-                  <BookItem item={item} index={index} key={index} />
-                ))}
-            </Space>
-          </>}
-
-          {currentBooks && <>
-            <Title level={2}>Last Read </Title>
-            <Space align='start' size={10} wrap>
-              {currentBooks
-                .map((item, index) => (
-                  <BookItem item={item} index={index} key={index} />
-                ))}
-            </Space>
-          </>}
-
-
-          <Divider />
-          <Title level={2}>All Books</Title>
-          <div>
-            <Space align='start' size={10} wrap>
-              {books.map((item, index) => (
-                <BookItem item={item} index={index} key={index} />
-              ))}
-            </Space>
-
-            {/* <InfiniteScroll
-              threshold={0}
-              loadMore={() => { return fetchBooks() }}
-              hasMore={count > books.length} >
-              {count > books.length ? <h1>Loading</h1> : <h1>End page</h1>}
-            </InfiniteScroll> */}
-          </div>
-
-        </Space> :
-
-        // for other tab
-        <Space align='start' size={10} wrap>
-          {getFilteredBooks()}
-        </Space>
-      }
+        {getTabView()}
+      </div>
     </div>
   );
 }

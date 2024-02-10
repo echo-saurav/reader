@@ -47,6 +47,64 @@ export const login = (username, password) => {
 
 }
 
+export const getUsersFromBackend = () => {
+    return fetch(`${API}/users`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("login res", response)
+        return response.json()
+    }).catch(e => console.log(e))
+
+}
+
+export const onCreateUserToBackend = (username,password,is_admin) => {
+    const payload = JSON.stringify({
+        "username": username,
+        "password": password,
+        "is_admin":is_admin
+    })
+    // console.log("login payload", payload)
+    return fetch(`${API}/user/create`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("login res", response)
+        return response.json()
+    }).catch(e => console.log(e))
+
+}
+
+export const deleteUserBackend = (user_id,is_admin) => {
+    const payload = JSON.stringify({
+        "user_id":user_id,
+        "is_admin":is_admin
+    })
+    // console.log("login payload", payload)
+    return fetch(`${API}/user/delete`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("login res", response)
+        return response.json()
+    }).catch(e => console.log(e))
+
+}
+
+
+
+
 export const setProgressToBackend = (book_id, uid, progress) => {
     if (!(book_id && uid && progress)) return
 
@@ -93,6 +151,29 @@ export const getBooksFromBackend = (lastBookId, uid) => {
     }).catch(e => console.log(e))
 
 }
+
+export const getProcessingBooksFromBackend = (lastBookId,limit) => {
+    const payload = JSON.stringify({
+        "last_id": lastBookId,
+        "limit": limit,
+    })
+    // console.log("get books payload", payload)
+    return fetch(`${API}/books/processing`, {
+        method: "POST",
+        body: payload,
+        headers: {
+            "Content-Type": "application/json",
+        }
+
+    }).then((response) => {
+        // console.log("get books res", response)
+        if (response) return response.json()
+        else return []
+
+    }).catch(e => console.log(e))
+
+}
+
 
 export const getCurrentBooksFromBackend = (uid,limit) => {
     const payload = JSON.stringify({
