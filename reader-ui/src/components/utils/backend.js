@@ -94,10 +94,10 @@ export const getBooksFromBackend = (lastBookId, uid) => {
 
 }
 
-export const getCurrentBooksFromBackend = (uid) => {
+export const getCurrentBooksFromBackend = (uid,limit) => {
     const payload = JSON.stringify({
         // "start_book_id": lastBookId,
-        "limit": other_books_limit,
+        "limit": limit,
         "user_id": uid
     })
     // console.log("get books payload", payload)
@@ -186,10 +186,10 @@ export const getBookmarksFromBackend = (uid,book_id) => {
 
 }
 
-export const getAllBookmarksFromBackend = (uid) => {
+export const getAllBookmarksFromBackend = (uid,limit) => {
     const payload = JSON.stringify({
         // "start_book_id": lastBookId,
-        "limit": other_books_limit,
+        "limit": limit,
         "user_id": uid
     })
     // console.log("get books payload", payload)

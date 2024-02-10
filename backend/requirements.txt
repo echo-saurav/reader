@@ -6,3 +6,4 @@ gunicorn
 pymongo
 pytesseract
 watchdog
+apscheduler

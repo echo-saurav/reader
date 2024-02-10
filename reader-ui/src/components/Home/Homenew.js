@@ -66,7 +66,7 @@ export default function HomeNew() {
     })
 
 
-    await getCurrentBooksFromBackend(uid).then((res) => {
+    await getCurrentBooksFromBackend(uid,2).then((res) => {
 
       if (res && res.length > 0) {
         const tmp = []
@@ -91,7 +91,7 @@ export default function HomeNew() {
   }
 
   const loadBookmarks = () => {
-    getAllBookmarksFromBackend(uid).then(res => {
+    getAllBookmarksFromBackend(uid,2).then(res => {
       setBookmarks(res)
     })
   }

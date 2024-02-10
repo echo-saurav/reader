@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { getBookFromBackend, getPageFromBackend, page_limit, saveBookmarkToBackend, setProgressToBackend } from "../utils/backend";
 import { useNavigate, useParams } from "react-router-dom";
-import "./Book.css"
 import SettingsSheet from "./SettingsSheet";
 import { AppContext } from "../utils/AppProvider";
 import Page from "./Page";

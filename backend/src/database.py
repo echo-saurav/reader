@@ -1,5 +1,4 @@
 from datetime import datetime
-import  threading
 from pymongo import MongoClient, ReturnDocument
 from bson import ObjectId
 from bson.json_util import dumps
@@ -8,12 +7,6 @@ import pprint
 
 class DB:
     def insert_book(self, name, description, page_no, path):
-        # if self.running_insert:
-        #     print("avoiding race condition", path)
-        #     return
-
-        # self.running_insert = True
-
         book_id = ObjectId()
         filter_book = {"path": str(path)}
         self.books.update_one(
@@ -28,81 +21,17 @@ class DB:
             }
             }, upsert=True)
 
-
-        # filter_book = {"path": str(path)}
-        # query = self.books.find_one(filter_book)
-        # print("find query", query)
-        # if query is None:
-        #     book_id = ObjectId()
-        #     res = self.books.insert_one({
-        #         "_id": book_id,
-        #         "cover": f"/book/image/{str(book_id)}/0",
-        #         "name": name, "description": description,
-        #         "page_no": page_no, "path": path,
-        #         "insert_time": datetime.now()
-        #     })
-        #     print("insert book", res)
-        # self.running_insert = False
-
-    # def insert_book(self, name, description, page_no, path):
-    #     if self.running_insert:
-    #         print("avoiding race condition", path)
-    #         return
-    #
-    #     self.running_insert = True
-    #     print("file insert ", path)
-    #     filter_book = {"path": str(path)}
-    #     update_book = {"update_time": datetime.now()}
-    #     res = self.books.update_one(
-    #         filter_book, {"$set": update_book, "$setOnInsert": {"insert_time": datetime.now()}},
-    #         upsert=True)
-    #
-    #     # update book
-    #     if not res.upserted_id:
-    #         print(f"update book {path}")
-    #         # reset
-    #         self.running_insert = False
-    #         return False
-    #     # insert new book
-    #     else:
-    #         print(f"insert new book {path}")
-    #         update_book = {
-    #             "name": name, "description": description, "page_no": page_no,
-    #             "cover": f"/book/image/{str(res.upserted_id)}/0", "path": path,
-    #             "update_time": datetime.now()
-    #         }
-    #         # self.books.update_one(filter_book, {"$set": update_book})
-    #         self.books.update_one(filter_book, {"$set": update_book})
-    #         # reset
-    #         self.running_insert = False
-    #         return str(res.upserted_id)
-    #
-    #     # res = self.books.find_one_and_update(
-    #     #     filter_book, {"$set": update_book},
-    #     #     upsert=True, return_document=ReturnDocument.AFTER)
-    #
-    #     # return res
-
-    # def insert_book(self, name, description, page_no, cover, path):
-    #     # res = self.books.insert_one({
-    #     #     "name": name, "description": description, "page_no": page_no,
-    #     #     "cover": cover, "path": path
-    #     # })
-    #     filter_book = {"path": path}
-    #     update_book = {
-    #         "name": name, "description": description, "page_no": page_no,
-    #         "cover": cover, "path": path
-    #     }
-    #     res = self.books.find_one_and_update(
-    #         filter_book, {"$set": update_book}, upsert=True,
-    #         return_document=ReturnDocument.AFTER)
-    #     return res.get("_id")
-
     def delete_book(self, book_id):
         print("delete book", book_id)
         delete_book = self.books.delete_one({"_id": ObjectId(book_id)})
         res = self.user_settings.delete_many({"book_id": str(book_id)})
         res = self.bookmarks.delete_many({"book_id": str(book_id)})
+
+    def delete_by_path(self, book_path):
+        print("delete book by path", book_path)
+        book = self.get_book_by_path(book_path)
+        book_id = book.get("_id")
+        self.delete_book(book_id)
 
     def update_book_by_object(self, filter_object, updated_object):
         res = self.books.update_one(filter_object, {"$set": updated_object})
@@ -180,8 +109,15 @@ class DB:
         count = self.books.count_documents({})
         return dumps({"books": books, "count": count})
 
-    def get_currently_read_books(self, user_id=None, limit=20):
-        books = self.user_settings.aggregate([
+    def get_currently_read_books(self, user_id=None, limit=20, last_id=None):
+        pipline = []
+        if last_id:
+            pipline.append({
+                "$match": {
+                    "_id": {"$gt": ObjectId(last_id)},
+                },
+            })
+        pipline.extend([
             {
                 '$match': {
                     'user_id': user_id
@@ -222,6 +158,7 @@ class DB:
                 }
             }
         ])
+        books = self.user_settings.aggregate(pipline)
         return dumps(books)
 
     def get_book(self, book_id):
@@ -290,16 +227,28 @@ class DB:
             }
         ])
         return dumps(bookmarks)
-        # bookmarks = self.bookmarks \
-        #     .find({"user_id": user_id, "book_id": book_id})
-        # return dumps(bookmarks)
 
-    def get_all_bookmarks(self, user_id, limit=20):
-        bookmarks = self.bookmarks.aggregate([
+    def get_all_bookmarks(self, user_id, limit=20, last_id=None):
+        pipline = []
+        if last_id:
+            pipline.append({
+                "$match": {
+                    "_id": {"$gt": ObjectId(last_id)},
+                },
+            })
+        pipline.extend([
+            {
+                '$sort': {
+                    "update_time": -1
+                }
+            },
             {
                 '$match': {
                     'user_id': user_id
                 }
+            },
+            {
+                '$limit': limit
             },
             {
                 '$lookup': {
@@ -328,6 +277,7 @@ class DB:
                 }
             }
         ])
+        bookmarks = self.bookmarks.aggregate(pipline)
         return dumps(bookmarks)
 
     def query_bookmarks(self, user_id, query, limit):
@@ -513,5 +463,3 @@ class DB:
         self.bookmarks = db['bookmarks']
         info = client.server_info()
         pprint.pprint(info)
-
-

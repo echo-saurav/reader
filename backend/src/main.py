@@ -6,6 +6,7 @@ import logging
 from DirWatcher import DirWatcher
 from database import DB
 from PDFScan import PDFScan
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # Settings___________________________________________________________
 PORT = os.getenv(key='PORT', default=5500)
@@ -50,9 +51,11 @@ def books():
 @app.route('/books/current', methods=["POST"])
 def current_books():
     data = request.get_json()
-    limit = data.get("limit", 20)
     user_id = data.get("user_id", None)
-    res = db.get_currently_read_books(user_id, limit)
+    limit = data.get("limit", 20)
+    last_id = data.get("last_id", None)
+
+    res = db.get_currently_read_books(user_id, limit, last_id)
     return res
 
 
@@ -277,6 +280,21 @@ def set_progress():
     return {"res": res}
 
 
+count = 0
+
+
+def trigger():
+    global count
+    print("trigger", count)
+    count = count + 1
+
+
+# # background scheduler
+# scheduler = BackgroundScheduler()
+# # scheduler.add_job(id="initial_scan", func=dirWatcher.trigger, trigger='date')
+# scheduler.add_job(id="periodic_scan", func=trigger, trigger='interval', seconds=1)
+# scheduler.start()
+
 if __name__ == '__main__':
     new_user = db.create_user(username, password, True)
-    app.run(debug=True, host='0.0.0.0', port=PORT, threaded=True)
+    app.run(use_reloader=False, debug=True, host='0.0.0.0', port=PORT, threaded=True)
