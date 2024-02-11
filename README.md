@@ -7,8 +7,8 @@ Selfhosted pdf reader, focused on reading pdf from mobile device
 
 
 ## Todo's
-- [ ] add user ui
-- [ ] add tabs (currently reading , not read, new ) 
+- [x] add user ui
+- [x] add tabs (currently reading , not read, new ) 
 - [ ] scan text periodically to store in database (mongodb + vectordb)
 - [ ] add vector db for searching text
 - [ ] user reading stats 
@@ -16,14 +16,14 @@ Selfhosted pdf reader, focused on reading pdf from mobile device
 - [ ] google books api 
 - [ ] options to show last page
 - [ ] translation
-- [ ] bookmark pages
+- [x] bookmark pages
 - [ ] tts page reading
 
 ## bugs and others
-- [ ] empty backend response
+- [x] empty backend response
 - [ ] all user setting api endpoint
 - [ ] efficient pdf read (not open pdf every time user request)
-- [ ] store cover images to fetch faster
+- [x] store cover images to fetch faster/ low res image
 
 
 
