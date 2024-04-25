@@ -17,7 +17,7 @@ services:
     ports:
       - "5500:5500"
     volumes:
-      - ~/Documents/Books:/books:ro
+      - ./books:/books:ro
 
 
   reader-db:
