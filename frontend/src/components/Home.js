@@ -24,8 +24,8 @@ export default function Home() {
                         key={k}
                         cover={
                             <img
-                                alt={v.google_info.title ? v.google_info.title : ""}
-                                src={v.google_info.smallThumbnail ? v.google_info.smallThumbnail : ""}
+                                alt={v.google_info ? v.google_info.title : ""}
+                                src={v.google_info ? v.google_info.smallThumbnail : ""}
                             />}
                     >
                         {
