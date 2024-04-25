@@ -3,8 +3,8 @@ version: '3.9'
 services:
   reader-backend:
     container_name: reader-backend
-    depends_on:
-      - reader-db
+    # depends_on:
+    #   - reader-backend
     build:
       context: backend
       dockerfile: Dockerfile
@@ -12,24 +12,13 @@ services:
       - USER_NAME=demouser
       - USER_PASSWORD=demouser
       - BOOK_DIR=/books
-      - DB_HOST=192.168.0.120
+      - DB_HOST=reader-db
       - DB_PORT=27018
     ports:
       - "5500:5500"
     volumes:
-      - ~/storage/public/books:/books:ro
+      - ~/Documents/Books:/books:ro
 
-  reader-ui:
-    container_name: reader-ui
-    depends_on:
-     - reader-backend
-    build:
-      context: reader-ui
-      dockerfile: Dockerfile
-    ports:
-      - 6600:80
-    environment:
-      NODE_ENV: development
 
   reader-db:
     image: mongo
@@ -38,28 +27,28 @@ services:
     ports:
       - 27018:27017
     volumes:
-      - ./data/prod:/data/db
+      - ./mongo/prod:/data/db
       # - /etc/timezone:/etc/timezone:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
 
-  # reader-mongo-express:
-  #   image: mongo-express
-  #   container_name: reader-mongo-express
-  #   depends_on:
-  #     - reader-db 
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@reader-db:27017/
-  #     ME_CONFIG_BASICAUTH_USERNAME: admin 
-  #     ME_CONFIG_BASICAUTH_PASSWORD: admin
-  #     ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-  #     ME_CONFIG_MONGODB_SERVER: mongo
+
+  reader-frontend:
+    container_name: reader-frontend
+    # depends_on:
+    #  - reader-backend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND=http://192.168.0.102:5500/
+    ports:
+      - 6600:80
+    environment:
+      NODE_ENV: production
+
+
 
 
 

@@ -2,8 +2,6 @@
 Selfhosted pdf reader, focused on reading pdf from mobile device 
 (under dev, still most of the things don't works)
 
-![ss](./images/home.png)
-
 
 
 ## Todo's
