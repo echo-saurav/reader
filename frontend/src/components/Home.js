@@ -24,18 +24,26 @@ export default function Home() {
                         key={k}
                         cover={
                             <img
-                                alt={v.google_info.title}
-                                src={v.google_info.smallThumbnail}
+                                alt={v.google_info.title ? v.google_info.title : ""}
+                                src={v.google_info.smallThumbnail ? v.google_info.smallThumbnail : ""}
                             />}
                     >
-                        <Typography.Title style={{margin:0}} level={5}>{v.google_info.title}</Typography.Title>
-                        <Typography.Text style={{margin:0}} type="secondary">
-                            {
-                                v.google_info.description ?
-                                    v.google_info.description.slice(0, 50) :
-                                    v.google_info.subtitle.slice(0, 50)
-                            }
-                        </Typography.Text>
+                        {
+                            v.google_info ?
+                                <>
+                                    <Typography.Title style={{ margin: 0 }} level={5}>{v.google_info.title}</Typography.Title>
+                                    <Typography.Text style={{ margin: 0 }} type="secondary">
+                                        {
+                                            v.google_info.description ?
+                                                v.google_info.description.slice(0, 50) :
+                                                v.google_info.subtitle.slice(0, 50)
+                                        }
+                                    </Typography.Text>
+                                </> :
+                                <>
+                                    <Typography.Title style={{ margin: 0 }} level={5}>{v.filename}</Typography.Title>
+                                </>
+                        }
                     </Card>
                 ))}
 
