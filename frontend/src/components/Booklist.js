@@ -53,12 +53,13 @@ export default function BookList() {
             {/* currently reading */}
             {loadingCurrentlyReading && <LoadingBookList />}
             <Space wrap>
-                {!loadingCurrentlyReading && currentlyReading.map((item, key) =>
-                    <BookCard
+                {!loadingCurrentlyReading && currentlyReading.map((item, key) => {
+                    item.google_info && <BookCard
                         title={item.google_info.title}
                         description={item.google_info.description}
                         key={key}
                         cover={item.google_info.thumbnail} />
+                }
                 )}
             </Space>
 
@@ -67,11 +68,12 @@ export default function BookList() {
             <Typography.Title level={2}>Library</Typography.Title>
             {loadingBooklist && <LoadingBookList />}
             <Space wrap>
-                {!loadingBooklist && bookList.map((item, key) =>
-                    <BookCard
+                {!loadingBooklist && bookList.map((item, key) => {
+                    item.google_info && <BookCard
                         title={item.google_info.title}
                         description={item.google_info.description}
                         key={key} cover={item.google_info.thumbnail} />
+                }
                 )}
             </Space>
         </Layout>

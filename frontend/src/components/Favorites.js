@@ -35,11 +35,11 @@ export default function Favorites() {
             {/* <StackGrid columnWidth={160}> */}
 
                 {!loadingBooklist && bookList.map((item, key) =>
-                    <BookCard
+                    {item.google_info && <BookCard
                         title={item.google_info.title}
                         description={item.google_info.description}
                         key={key}
-                        cover={item.google_info.thumbnail} />
+                        cover={item.google_info.thumbnail} />}
                 )}
             {/* </StackGrid> */}
             </Space>
