@@ -1,5 +1,5 @@
 import { Card, Input, Layout } from "antd";
-import { useContext, } from "react";
+import { useContext, useState, } from "react";
 import { AppContext } from "../../utils/AppProvider";
 import { Content, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
@@ -11,16 +11,21 @@ import HomeRoutes from "./HomeRoutes";
 
 
 export default function Home() {
-    
-    const searchBar = <Input
-        style={{ margin: '10px' }}
-        onChange={(e) => {
-            // onQueryBooks(e.target.value);
-        }}
-        // value={query}
-        placeholder="Search books, bookmarks or text"
-        prefix={<SearchOutlined />}
-    />
+
+    const searchBar =
+        <Layout style={{padding:"5px"}}>
+
+            <Input
+                size="large"
+                // style={{ margin: '10px' }}
+                onChange={(e) => {
+                    // onQueryBooks(e.target.value);
+                }}
+                // value={query}
+                placeholder="Search books, bookmarks or text"
+                prefix={<SearchOutlined />}
+            />
+        </Layout>
 
     return <HomeLayout
         contentEl={<HomeRoutes />}
@@ -31,39 +36,51 @@ export default function Home() {
 
 
 function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
-    const { isMobile } = useContext(AppContext)
-    const sidebarWidth = "300px"
+    const {collapsed, setCollapsed, isMobile } = useContext(AppContext)
+    const sidebarWidth = "250px"
+    const sidebarWidthMin = "80px"
     const bottombarHeight = "70px"
+    
+
+    const getSidebarWidth = () => {
+        if (collapsed) return sidebarWidthMin
+        else return sidebarWidth
+    }
 
     return (
         <Layout>
-            {!isMobile && <Sider width={sidebarWidth} style={{
-                overflow: 'auto',
-                height: '100vh',
-                position: 'fixed',
-                left: 0,
-                top: 0,
-                bottom: 0,
-                background: "transparent"
-            }}>
-                {sidebarMenuEl}
-            </Sider>}
+            {!isMobile &&
+                <Sider
+                    collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}
+                    width={sidebarWidth} style={{
+                        overflow: 'auto',
+                        height: '100vh',
+                        position: 'fixed',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        // background: "transparent"
+                    }}>
+                    {sidebarMenuEl}
+                </Sider>}
             <Layout>
                 <Header style={{
-                    marginLeft: isMobile ? 0 : sidebarWidth,
+                    marginLeft: isMobile ? 0 : getSidebarWidth(),
                     position: 'sticky',
                     top: 0,
                     background: "transparent",
-                    zIndex: 1,
+                    zIndex: 100,
                     display: 'flex',
                     padding: '0'
                 }}>
+                    
                     {headerEl}
                 </Header>
                 <Content
                     style={{
-                        marginLeft: isMobile ? 0 : sidebarWidth,
-                        marginBottom: bottombarHeight
+                        marginLeft: isMobile ? 0 : getSidebarWidth(),
+                        marginBottom: bottombarHeight,
+                        padding: "10px"
                     }} >
                     {contentEl}
                 </Content>
@@ -77,7 +94,8 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
                     bottom: 0,
                     position: 'fixed',
                     padding: "0",
-                    margin: "0"
+                    margin: "0",
+                    zIndex: 100
                 }}>
 
                 {bottomBarEl}

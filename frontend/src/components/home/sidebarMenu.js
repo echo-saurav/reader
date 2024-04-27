@@ -7,15 +7,15 @@ export default function SidebarMenu() {
     const navigate = useNavigate()
     return (
         <>
-            <Typography.Title
+            {/* <Typography.Title
                 onClick={() => { navigate("/home") }}
                 style={{ margin: "20px", cursor: "pointer" }}
                 level={3}>
                 Reader
-            </Typography.Title>
+            </Typography.Title> */}
             <Menu
                 onClick={(v) => { navigate(v.key) }}
-                style={{ background: "transparent", borderRight: "none" }}
+                style={{ background: "transparent", borderRight: "none", marginTop:"30px" }}
                 mode="vertical"
                 items={[
                     { key: '/home/', label: "Home", icon: <HomeOutlined /> },
