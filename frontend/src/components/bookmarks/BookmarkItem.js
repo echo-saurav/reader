@@ -38,8 +38,8 @@ export default function BookmarkItem({
             <List.Item.Meta
                 onClick={() => { onClick() }}
                 // title={text? text :book_info[0].name }
-                title={title}
-                description={text.slice(0,300)}
+                title={title ? title : "empty title"}
+                description={text ? text.slice(0, 300) : "no description"}
                 avatar={!minimal &&
                     <img
                         alt="cover"
