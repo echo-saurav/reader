@@ -36,7 +36,7 @@ export default function Home() {
 
 
 function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
-    const {collapsed, setCollapsed, isMobile } = useContext(AppContext)
+    const {collapsed, setCollapsed, isMobile,isDarkTheme } = useContext(AppContext)
     const sidebarWidth = "250px"
     const sidebarWidthMin = "80px"
     const bottombarHeight = "70px"
@@ -51,6 +51,7 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
         <Layout>
             {!isMobile &&
                 <Sider
+                    theme={isDarkTheme?"dark":"light"}
                     collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}
                     width={sidebarWidth} style={{
                         overflow: 'auto',

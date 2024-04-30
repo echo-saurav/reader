@@ -1,4 +1,4 @@
-import { Typography } from "antd";
+import { Divider, Typography } from "antd";
 import { App, Button, List, Slider, Switch } from "antd";
 import { useContext } from "react";
 import { AppContext } from "../utils/AppProvider";
@@ -16,12 +16,23 @@ export default function Settings() {
         clickToLargeImage, setClickToLargeImage,
         pageImage, setPageImage, isMobile, onLogout } = useContext(AppContext)
     return (
-        <div style={{ padding: "10px" }}>
-            <div style={{ maxWidth:"1200px"
+        <div style={{ padding: "0px" }}>
+            <div style={{
+                maxWidth: "1200px"
                 //   width: isMobile ? "100%" : "700px", margin: "auto"
             }}>
-                <Typography.Title style={{ width: "100%", }}>Settings</Typography.Title>
-                <List>
+                <div style={{ marginLeft: "20px", maxWidth:"500px" }}>
+
+                    <Typography.Title level={2}>Settings</Typography.Title>
+                    <Typography.Paragraph type="secondary">
+                        These are default settings for book view,
+                        Some books/pdf have different page layout, language , size.
+                        you can also set book specific settings
+                        per book in the book view settings
+                    </Typography.Paragraph>
+                </div>
+
+                <List size="large">
                     <List.Item
                         extra={
                             <Switch checked={isDarkTheme} onChange={() => { onToggleTheme() }} />
@@ -29,17 +40,18 @@ export default function Settings() {
                         <List.Item.Meta title="Toggle dark theme" />
                     </List.Item>
                     <List.Item>
-                        <List.Item.Meta title={`Font size ${fontSize}`} />
+                        <List.Item.Meta title={`Font size ${fontSize}`}
+                            description={
+                                <Slider
+                                    value={fontSize}
+                                    onChange={(e) => { setFontSize(e) }}
+                                    step={1}
+                                    min={10}
+                                    max={35}
+                                    ticks
+                                />} />
                     </List.Item>
 
-                    <Slider
-                        value={fontSize}
-                        onChange={(e) => { setFontSize(e) }}
-                        step={1}
-                        min={10}
-                        max={35}
-                        ticks
-                    />
 
                     <List.Item
                         extra={

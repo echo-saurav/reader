@@ -4,6 +4,7 @@ import { getBooksFromBackend } from "../utils/backend";
 import BookCard from "./home/BookCard";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import LoadingBookList from "./home/LoadingBookList";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -12,6 +13,7 @@ export default function BookList() {
     const [loadingBooklist, setLoadingBooklist] = useState(true)
     const [currentlyReading, setCurrentlyReading] = useState([])
     const [loadingCurrentlyReading, setLoadingCurrentlyReading] = useState(true)
+    const navigate=useNavigate()    
 
     useEffect(() => {
         setLoadingBooklist(true)
@@ -45,16 +47,18 @@ export default function BookList() {
 
     return (
         <Layout style={{ padding: "10px" }}>
-            <Flex style={{ margin: "20px 0px" }} justify="space-between" align="center">
+            <Flex style={{ margin: "30px 0px" }} justify="space-between" align="center">
                 <Typography.Title style={{ margin: 0 }} level={2}>Currently Reading</Typography.Title>
-                <Button icon={<ArrowRightOutlined />}>more</Button>
+                <Button onClick={()=>{navigate("/home/currentlyReading")}}  icon={<ArrowRightOutlined />}>more</Button>
             </Flex>
 
             {/* currently reading */}
             {loadingCurrentlyReading && <LoadingBookList />}
-            <Space wrap>
-                {!loadingCurrentlyReading && currentlyReading.map((item, key) =>
+
+            <Space align="start" wrap>
+                {!loadingCurrentlyReading && currentlyReading.splice(0, 3).map((item, key) =>
                     item.google_info && <BookCard
+                        id={item.id}
                         title={item.google_info.title}
                         description={item.google_info.description}
                         key={key}
@@ -67,10 +71,11 @@ export default function BookList() {
             <Divider />
             <Typography.Title level={2}>Library</Typography.Title>
             {loadingBooklist && <LoadingBookList />}
-            <Space wrap>
+            <Space align="start" wrap>
                 {!loadingBooklist && bookList.map((item, key) =>
                     item.google_info && <BookCard
                         title={item.google_info.title}
+                        id={item.id}
                         description={item.google_info.description}
                         key={key} cover={item.google_info.thumbnail} />
 

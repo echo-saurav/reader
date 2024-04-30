@@ -5,7 +5,7 @@ import BookCard from "./home/BookCard";
 import LoadingBookList from "./home/LoadingBookList";
 
 
-export default function Favorites() {
+export default function CurrentlyReading() {
     const [bookList, setBookList] = useState([])
     const [loadingBooklist, setLoadingBooklist] = useState(true)
 
@@ -27,7 +27,7 @@ export default function Favorites() {
 
     return (
         <Layout style={{ padding: "10px" }}>
-            <Typography.Title level={2}>Favorites</Typography.Title>
+            <Typography.Title level={2}>Currently Reading</Typography.Title>
             {loadingBooklist && <LoadingBookList />}
             <Space align="start" wrap>
             

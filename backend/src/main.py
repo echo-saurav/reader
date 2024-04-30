@@ -54,5 +54,34 @@ def books():
     return response
 
 
+# book information with user config
+@app.route('/book/<book_id>', methods=["POST"])
+def book(book_id):
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    res = db.get_book_with_settings(book_id=book_id, user_id=user_id)
+    return res
+
+
+@app.route('/book/<book_id>/<page_no>', methods=["POST"])
+def pages(book_id, page_no):
+    data = request.get_json()
+    limit = data.get("limit", 10)
+    uid = data.get("uid",None)
+    filter_book = db.get_book(book_id=book_id)
+    if filter_book:
+        total_page = filter_book.get("page_no", 0)
+        pdf_path = filter_book.get("path", None)
+
+        if pdf_path:
+            res = pdf_scan.get_page_api_response(
+                book_id=book_id, pdf_path=pdf_path,
+                page_no=int(page_no),
+                total_page=int(total_page), limit=int(limit))
+            return res
+    else:
+        return []
+
+
 if __name__ == '__main__':
     app.run(use_reloader=True, debug=True, host='0.0.0.0', port=PORT, threaded=True)

@@ -14,7 +14,7 @@ const pdfImage_ = atomWithStorage('pdfImage', false)
 const pdfText_ = atomWithStorage('pdfText', true)
 const imageDarkMode_ = atomWithStorage("imageDarkMode", true)
 const imageClick_ = atomWithStorage('imageClick', false)
-const collapsed_ = atomWithStorage('sidebarCollapsed',false)
+const collapsed_ = atomWithStorage('sidebarCollapsed', false)
 
 export const AppProvider = ({ children }) => {
     const [isMobile, setMobile] = useState(true);
@@ -32,6 +32,7 @@ export const AppProvider = ({ children }) => {
 
     const onToggleTheme = () => {
         setDarkTheme(!isDarkTheme)
+        
     };
 
     const onLogin = (username, password) => {
@@ -65,17 +66,17 @@ export const AppProvider = ({ children }) => {
 
     return (
         <AppContext.Provider value={{
-            collapsed,setCollapsed,
+            collapsed, setCollapsed,
             isDarkTheme, onToggleTheme, // theme
             uid, isAdmin, onLogin, onLogout,// user management
             isMobile,
-            fontSize,setFontSize,
-            ocr,setOcr,
-            pageImage,setPageImage,
-            pdfImage,setPdfImage,
-            pdfText,setPdfText,
-            imageDarkMode,setImgaeDarkMode,
-            imageClick,setImageClick
+            fontSize, setFontSize,
+            ocr, setOcr,
+            pageImage, setPageImage,
+            pdfImage, setPdfImage,
+            pdfText, setPdfText,
+            imageDarkMode, setImgaeDarkMode,
+            imageClick, setImageClick
         }}>
             {children}
         </AppContext.Provider>
