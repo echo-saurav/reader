@@ -1,7 +1,7 @@
 import { Drawer, List, Tabs } from "antd"
 import { useContext, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import BookmarkList from "./PageBookmarkList"
+import BookmarkList from "../read/PageBookmarkList"
 import { AppContext } from "../../utils/AppProvider"
 
 

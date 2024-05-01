@@ -1,8 +1,8 @@
 import { Button, Col, Flex, Row } from "antd";
-import Page from "../pages/Page";
+import Page from "./Page";
 import { DownCircleOutlined, UpCircleOutlined } from "@ant-design/icons";
-import { useContext, useEffect, useState } from "react";
-import { ReadContext, ReadProvider } from "./ReadContext";
+import { useContext, useEffect } from "react";
+import { ReadContext } from "./ReadContext";
 
 export const scrollOffset = -180
 
@@ -24,9 +24,9 @@ export default function LoadedPages({ contents }) {
         // contents is empty when either its first loaded or 
         // its trigger by goto page function
         // so page needs to scroll at top before initial contents population
-        if (contents.length === 0 ) {
+        if (contents.length === 0) {
             window.scrollTo(0, 0)
-            console.log('empty contents',lastPos)
+            console.log('empty contents', lastPos)
             return
         }
         if (contents.length > 0) {

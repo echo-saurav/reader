@@ -1,6 +1,4 @@
 import { useContext, } from "react";
-
-
 import { Divider, Image, Typography, } from "antd";
 import { AppContext } from "../../utils/AppProvider";
 

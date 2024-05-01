@@ -3,13 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import { getBookById, getBookPages, page_limit } from "../../utils/backend";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../../utils/AppProvider";
-import Page from "./Page";
+import Page from "../read/Page";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import PageMenu from "./PageMenu";
 import Pagination from "./Pagination";
 import GotoPageModal from "./GotoPageModal";
-import SettingsSheet from "./SettingsSheet";
-import ChapterList from "./ChapterList";
+
 
 
 export default function PaginationWrapper() {

@@ -1,5 +1,4 @@
 import { App, Button, Drawer, Input, List, Space, Typography } from "antd";
-// import { deleteBookmarkToBackend, saveBookmarkToBackend } from "../utils/backend";
 import { useContext, useState } from "react";
 import BookmarkItem from "../bookmarks/BookmarkItem";
 import { AppContext } from "../../utils/AppProvider";

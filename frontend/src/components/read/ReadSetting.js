@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { Button, Drawer, InputNumber, List, Slider, Switch } from "antd";
+import { Button, Drawer, List, Slider, Switch } from "antd";
 import { AppContext } from "../../utils/AppProvider";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import { ReadContext, ReadProvider } from "./ReadContext";
+import { ReadContext } from "./ReadContext";
 
 
 export default function ReadSetting({ visible, setVisibility }) {
@@ -16,11 +16,11 @@ export default function ReadSetting({ visible, setVisibility }) {
         pdfImage, setPdfImage,
         pageImage, setPageImage,
         isMobile } = useContext(AppContext)
-    const { setJumpOpen } =  useContext(ReadContext)
+    const { setJumpOpen } = useContext(ReadContext)
 
     return (
         <Drawer
-            bodyStyle={{padding:0}}
+            bodyStyle={{ padding: 0 }}
             height="80svh"
             title="Settings"
             open={visible}

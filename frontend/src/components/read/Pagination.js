@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext} from "react";
 import { useEffect } from "react";
 import { ReadContext } from "./ReadContext";
 import LoadedPages from "./LoadedPages";
@@ -6,11 +6,10 @@ import { getBookPages } from "../../utils/backend";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../../utils/AppProvider";
 import PageProgressBar from "./PageProgressBar";
-import { Col, Flex, Row, Skeleton, Space } from "antd";
 
 
 export default function Pagination() {
-    const { setLoading, loading, startPageFrom, setLastPos, contents, setContents } = useContext(ReadContext)
+    const { setLoading, startPageFrom, setLastPos, contents, setContents } = useContext(ReadContext)
     const { uid } = useContext(AppContext)
     const { book_id } = useParams()
     

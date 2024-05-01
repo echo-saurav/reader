@@ -1,6 +1,5 @@
 
-import Page from "./Page"
-
+import Page from "../read/Page"
 
 
 export default function FullPage({ contents }) {

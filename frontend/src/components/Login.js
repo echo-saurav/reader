@@ -1,7 +1,6 @@
-
 import { useContext, useState } from "react";
 import { AppContext } from "../utils/AppProvider";
-import { App, Button, Card, Col, Input, Row, Space, Typography } from "antd";
+import { App, Button,  Col, Input, Row, Space, Typography } from "antd";
 import { ArrowRightOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
 
 

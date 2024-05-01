@@ -1,4 +1,4 @@
-import { Button, Col, Descriptions, Divider, Flex, Layout, Row, Space, Tag, Typography } from "antd";
+import { Button, Col, Descriptions,  Flex,  Row, Space, Tag, Typography } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { getBookById } from "../utils/backend";
 import { useParams } from "react-router-dom";
