@@ -4,14 +4,13 @@ import { DownCircleOutlined, UpCircleOutlined } from "@ant-design/icons";
 import { useContext, useEffect, useState } from "react";
 import { ReadContext, ReadProvider } from "./ReadContext";
 
+export const scrollOffset = -180
 
 export default function LoadedPages({ contents }) {
 
     const { book_info, setStartPageFrom, lastPos, loading } = useContext(ReadContext)
     const page_limit = 10
 
-    // const scrollOffset = -45
-    const scrollOffset = -160
     const scrollInto = (key) => {
         const divToScrollTo = document.getElementById(key);
         if (divToScrollTo) {
@@ -22,14 +21,22 @@ export default function LoadedPages({ contents }) {
     }
 
     useEffect(() => {
-        if (contents.length > 0 && lastPos) {
+        // contents is empty when either its first loaded or 
+        // its trigger by goto page function
+        // so page needs to scroll at top before initial contents population
+        if (contents.length === 0 ) {
+            window.scrollTo(0, 0)
+            console.log('empty contents',lastPos)
+            return
+        }
+        if (contents.length > 0) {
 
             // lastPos = -1 when its adding content at the end
             // lastPos = "first page no" when its adding content at top
             // this for scroll effect
-            if (lastPos > 0) {  
+            if (lastPos > 0) {
                 scrollInto(lastPos + "")
-                console.log('scroll into ',lastPos)
+                console.log('scroll into ', lastPos)
             }
         }
 
@@ -110,7 +117,7 @@ export default function LoadedPages({ contents }) {
         <Row align="center">
             <Col
                 id="pages"
-                xs={23} md={18} lg={15} xl={12}
+                xs={24} md={18} lg={15} xl={12}
                 style={{ minHeight: "100vh" }}>
                 {hasMorePrevious()}
                 {contents && contents.map((content, index) => <Page key={index} content={content} />)}

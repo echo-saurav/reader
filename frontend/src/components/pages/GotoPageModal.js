@@ -12,6 +12,7 @@ export default function GotoPageModal({ currentPageNo = 1, totalPage, open, onCl
 
     return (
         <Drawer
+
             height={230}
             title={`jump to ${jumpPage}`}
             placement="bottom"

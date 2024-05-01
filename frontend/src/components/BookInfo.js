@@ -19,6 +19,7 @@ export default function BookInfo() {
         getBookById(book_id, uid).then(res => {
             if (res && res.length > 0) {
                 setBookData(res[0])
+                window.scrollTo(0,0)
                 console.log("bookdata", res)
             }
         })

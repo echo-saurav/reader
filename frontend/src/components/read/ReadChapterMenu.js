@@ -24,7 +24,9 @@ export default function ReadChapterMenu({ visible, setVisibility }) {
 
     return (
         <Drawer
-            title="Chapters and bookmarks"
+            bodyStyle={{ padding: "13px" }}
+            height="80svh"
+            title="Chapters and Bookmarks"
             open={visible}
             placement={isMobile ? "bottom" : 'right'}
             onClose={() => {

@@ -1,30 +1,35 @@
-import { Layout } from "antd";
+import { FloatButton, Layout } from "antd";
 import { ReadContext, ReadProvider } from "./ReadContext";
 import Pagination from "./Pagination";
-import { ArrowLeftOutlined, BookOutlined, MenuOutlined, SettingOutlined } from "@ant-design/icons"
+import { ArrowLeftOutlined, BookOutlined, HomeOutlined, MenuOutlined, SettingOutlined } from "@ant-design/icons"
 import { Affix, Badge, Button, Flex } from "antd"
 import { useContext, useState } from "react";
-import SettingsSheet from "../pages/SettingsSheet";
-import ChapterList from "../pages/ChapterList";
 import ReadSetting from "./ReadSetting";
 import ReadChapterMenu from "./ReadChapterMenu";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../utils/AppProvider";
 
 
 
 function Read() {
     const [settingVisibility, setSettingVisibility] = useState(false)
     const [chaptersVisibility, setChaptersVisibility] = useState(false)
+    const [openFloatButton, setOpenFloatButton] = useState(false)
     const { showBadge } = useContext(ReadContext)
+    const { isMobile } = useContext(AppContext)
+    const navigate = useNavigate()
 
     const onBookmarkPage = () => {
 
     }
 
+
+
     return (
         <Layout>
-            <Affix offsetTop={10}>
+            {!isMobile && <Affix offsetTop={10}>
                 <Flex justify="start" style={{ padding: "10px" }}>
-                    <Button href="/" style={{ marginRight: "5px", border: "none" }}
+                    <Button onClick={() => { navigate("/") }} style={{ marginRight: "5px", border: "none" }}
                         shape="circle" icon={<ArrowLeftOutlined />} />
 
                     <Flex justify="end" style={{ flex: 1 }} >
@@ -34,8 +39,6 @@ function Read() {
                                 style={{ marginLeft: "5px", border: "none" }}
                                 shape="circle" icon={<BookOutlined />} />
                         </Badge>
-                        {/* <Button style={{ marginLeft: "5px", border: "none" }}
-                            shape="circle" icon={<SearchOutlined />} /> */}
                         <Button onClick={() => { setChaptersVisibility(true) }}
                             style={{ marginLeft: "5px", border: "none" }}
                             shape="circle" icon={<MenuOutlined />} />
@@ -44,7 +47,18 @@ function Read() {
                             shape="circle" icon={<SettingOutlined />} />
                     </Flex>
                 </Flex>
-            </Affix>
+            </Affix>}
+            {isMobile &&
+                <FloatButton.Group
+                    shape="square"
+                    onClick={() => { setOpenFloatButton(!openFloatButton) }}
+                    type="primary" open={openFloatButton} trigger="click" icon={<MenuOutlined />}>
+                    <FloatButton onClick={() => { navigate("/") }} icon={<HomeOutlined />} />
+                    <FloatButton onClick={() => { onBookmarkPage() }} icon={<BookOutlined />} />
+                    <FloatButton onClick={() => { setChaptersVisibility(true) }} icon={<MenuOutlined />} />
+                    <FloatButton onClick={() => { setSettingVisibility(true) }} icon={<SettingOutlined />} />
+
+                </FloatButton.Group>}
 
             {/* sidebar */}
             <ReadSetting

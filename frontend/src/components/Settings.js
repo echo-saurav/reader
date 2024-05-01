@@ -2,6 +2,7 @@ import { Divider, Typography } from "antd";
 import { App, Button, List, Slider, Switch } from "antd";
 import { useContext } from "react";
 import { AppContext } from "../utils/AppProvider";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Settings() {
@@ -15,13 +16,40 @@ export default function Settings() {
         pdfImage, setPdfImage,
         clickToLargeImage, setClickToLargeImage,
         pageImage, setPageImage, isMobile, onLogout } = useContext(AppContext)
+    const { message, notification, modal } = App.useApp();
+    const navigate=useNavigate()
+
+    const onLogoutButtonClick = () => {
+        modal.confirm({
+            title: "Logout",
+            content: "Are you sure you want to logout?",
+            onOk: () => {
+                onLogout()
+                message.success('Logout successful')
+                navigate("/")
+            },
+
+        })
+    }
+
+    const onResetServerClick = () => {
+        modal.error({
+            title: "Reset and re-scan server",
+            content: "This will remove all file index bookmarks and rebuild database",
+            onOk: () => {
+                message.success('restart started successful')
+            },
+
+        })
+    }
+
     return (
         <div style={{ padding: "0px" }}>
             <div style={{
                 maxWidth: "1200px"
                 //   width: isMobile ? "100%" : "700px", margin: "auto"
             }}>
-                <div style={{ marginLeft: "20px", maxWidth:"500px" }}>
+                <div style={{ marginLeft: "20px", maxWidth: "500px" }}>
 
                     <Typography.Title level={2}>Settings</Typography.Title>
                     <Typography.Paragraph type="secondary">
@@ -100,14 +128,14 @@ export default function Settings() {
                     <List.Item>
                         <Button.Group >
                             <Button
-                                // onClick={()=>{onResetServer()}}
+                                onClick={()=>{onResetServerClick()}}
                                 size="large" >
                                 Reset server
                             </Button>
                             <Button
                                 danger
                                 onClick={() => {
-                                    //   onLogoutButtonClick()
+                                    onLogoutButtonClick()
                                 }}
                                 block size='large'
                                 fill="outline">

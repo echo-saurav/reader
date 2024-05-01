@@ -1,19 +1,20 @@
-import { Card, Input, Layout } from "antd";
+import { Card, FloatButton, Input, Layout } from "antd";
 import { useContext, useState, } from "react";
 import { AppContext } from "../../utils/AppProvider";
 import { Content, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import { SearchOutlined, } from "@ant-design/icons";
+import { BookOutlined, ClockCircleOutlined, HomeOutlined, MenuOutlined, SearchOutlined, SettingOutlined, StarOutlined, } from "@ant-design/icons";
 import BottomBarMenu from "./bottombarMenu";
 import SidebarMenu from "./sidebarMenu";
 import HomeRoutes from "./HomeRoutes";
+import { useNavigate } from "react-router-dom";
 
 
 
 export default function Home() {
 
     const searchBar =
-        <Layout style={{padding:"5px"}}>
+        <Layout style={{ padding: "5px" }}>
 
             <Input
                 size="large"
@@ -36,11 +37,14 @@ export default function Home() {
 
 
 function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
-    const {collapsed, setCollapsed, isMobile,isDarkTheme } = useContext(AppContext)
+    const { collapsed, setCollapsed, isMobile, isDarkTheme } = useContext(AppContext)
     const sidebarWidth = "250px"
     const sidebarWidthMin = "80px"
     const bottombarHeight = "70px"
-    
+    const [openFloatButton, setOpenFloatButton] = useState(false)
+    const navigate = useNavigate()
+
+
 
     const getSidebarWidth = () => {
         if (collapsed) return sidebarWidthMin
@@ -51,7 +55,7 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
         <Layout>
             {!isMobile &&
                 <Sider
-                    theme={isDarkTheme?"dark":"light"}
+                    theme={isDarkTheme ? "dark" : "light"}
                     collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}
                     width={sidebarWidth} style={{
                         overflow: 'auto',
@@ -74,7 +78,7 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
                     display: 'flex',
                     padding: '0'
                 }}>
-                    
+
                     {headerEl}
                 </Header>
                 <Content
@@ -86,21 +90,20 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
                     {contentEl}
                 </Content>
             </Layout>
-            {isMobile && <Card
-                bordered={false}
-                size="small"
-                style={{
-                    width: "100vw",
-                    height: bottombarHeight,
-                    bottom: 0,
-                    position: 'fixed',
-                    padding: "0",
-                    margin: "0",
-                    zIndex: 100
-                }}>
+            {isMobile && <FloatButton.Group
+                shape="square"
+                type="primary"
+                icon={<MenuOutlined />}
+                onClick={() => { setOpenFloatButton(!openFloatButton) }}
+                open={openFloatButton} trigger="click">
+                <FloatButton onClick={() => { navigate('/home'); setOpenFloatButton(false) }} icon={<HomeOutlined />} />
+                <FloatButton onClick={() => { navigate('/home/currentlyReading'); setOpenFloatButton(false) }} icon={<ClockCircleOutlined />} />
+                <FloatButton onClick={() => { navigate('/home/favorites'); setOpenFloatButton(false) }} icon={<StarOutlined />} />
+                <FloatButton onClick={() => { navigate('/home/bookmarks'); setOpenFloatButton(false) }} icon={<BookOutlined />} />
+                <FloatButton onClick={() => { navigate('/home/settings'); setOpenFloatButton(false) }} icon={<SettingOutlined />} />
+            </FloatButton.Group>}
 
-                {bottomBarEl}
-            </Card>}
+
         </Layout>
     )
 }

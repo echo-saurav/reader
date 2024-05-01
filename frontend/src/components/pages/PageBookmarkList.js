@@ -6,7 +6,7 @@ import { AppContext } from "../../utils/AppProvider";
 
 
 
-export default function BookmarkList({ minimal = false, bookmarks, loadBookmarks }) {
+export default function BookmarkList({ minimal = false, bookmarks }) {
     const { modal, message } = App.useApp()
     const { uid, isMobile } = useContext(AppContext)
     const [visible, setVisibility] = useState(false)

@@ -14,7 +14,7 @@ export default function Login() {
 
     return (
         <Row justify="center" align="middle" style={{ height: "100dvh" }}>
-            <Col xs={23} md={12} lg={8} xxl={6}>
+            <Col xs={22} md={12} lg={8} xxl={6}>
                 
                 <Space direction="vertical" style={{ width: "100%" }}>
                     <Typography.Title level={2}>Reader</Typography.Title>
@@ -37,12 +37,14 @@ export default function Login() {
                         }}
                     />
                     <Button
+                        size="large"
+                        block
                         icon={<ArrowRightOutlined />}
                         // block
                         onClick={() => {
                             // onClickLogin();
                             onLogin()
-                            message.success("nice")
+                            message.success("Login successful")
                         }}
                         type="primary"
                     >

@@ -20,6 +20,8 @@ export default function ReadSetting({ visible, setVisibility }) {
 
     return (
         <Drawer
+            bodyStyle={{padding:0}}
+            height="80svh"
             title="Settings"
             open={visible}
             placement={isMobile ? "bottom" : 'right'}
@@ -27,7 +29,7 @@ export default function ReadSetting({ visible, setVisibility }) {
                 setVisibility(false)
             }}>
 
-            <List size="large" >
+            <List size="small">
                 <List.Item>
                     <Button
                         onClick={() => {

@@ -11,11 +11,7 @@ export default function BookCard({ id, title, description, cover }) {
     }
 
     const addToFavorite = () => {
-        // message.success('added to favorite')
-        notification.success({
-            message: 'Add Favorite',
-            description: 'Book added to favorite!'
-        })
+        message.success('Added to Favorite')
     }
 
     const gotoBookPageView = () => {
