@@ -113,10 +113,11 @@ class DirWatcher:
         self.last_mtime = None
         self.last_trigger = 0
         self.count = 0
-        # initial scan
-        # database.remove_all_books()
-        # database.remove_all_users()
-        # database.remove_all_user_settings()
-        # database.remove_all_bookmarks()
+        # initial scan ___________________
+        database.remove_all_books()
+        database.remove_all_users()
+        database.remove_all_user_settings()
+        database.remove_all_bookmarks()
+        # ________________________________
         self.scan_files()
         self.schedule_watchdog_task()

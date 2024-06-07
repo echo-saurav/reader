@@ -1,4 +1,4 @@
-import { BookOutlined, ClockCircleOutlined, HomeOutlined, SettingOutlined, StarOutlined } from "@ant-design/icons"
+import { BarsOutlined, BookOutlined, ClockCircleOutlined, HomeOutlined, SettingOutlined, StarOutlined, TeamOutlined } from "@ant-design/icons"
 import { Menu, Typography } from "antd"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
@@ -23,9 +23,11 @@ export default function SidebarMenu() {
                 mode="vertical"
                 items={[
                     { key: '/home/', label: "Home", icon: <HomeOutlined /> },
+                    { key: '/home/library', label: "Library", icon: <BarsOutlined /> },
                     { key: '/home/currentlyReading', label: "Currently Reading", icon: <ClockCircleOutlined /> },
                     { key: '/home/favorites', label: "Favorite", icon: <StarOutlined /> },
                     { key: '/home/bookmarks', label: "Bookmarks", icon: <BookOutlined /> },
+                    { key: '/home/users', label: "Users", icon: <TeamOutlined /> },
                     { key: '/home/settings', label: "Setting", icon: <SettingOutlined /> },
                 ]} />
         </>

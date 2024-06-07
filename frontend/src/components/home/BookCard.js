@@ -2,11 +2,12 @@ import { BookOutlined, InfoCircleOutlined, StarOutlined } from "@ant-design/icon
 import { App, Button, Flex, Progress, Tag, Typography } from "antd"
 import { useNavigate } from "react-router-dom"
 
-export default function BookCard({ id, title, description, cover }) {
+export default function BookCard({ id, title, description, cover, progress }) {
     const navigate = useNavigate()
     const { message, notification, modal } = App.useApp();
 
     const gotoBookInfoPage = () => {
+        if (id && progress) navigate(`/home/bookInfo/${id}/${progress}`)
         if (id) navigate(`/home/bookInfo/${id}`)
     }
 
@@ -22,7 +23,7 @@ export default function BookCard({ id, title, description, cover }) {
     return (
         <div style={{ width: "160px", marginRight: "10px", marginBottom: "20px" }}>
 
-            <img onClick={()=>{gotoBookPageView()}} style={{ borderRadius: "10px", width: "100%" }} src={cover} alt="cover" />
+            <img onClick={() => { gotoBookPageView() }} style={{ borderRadius: "10px", width: "100%" }} src={cover} alt="cover" />
 
             <Progress size="small" percent={34} />
             <Typography.Title level={5} style={{ margin: "3px" }} >{title ? title : "empty book name"}</Typography.Title>

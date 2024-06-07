@@ -34,13 +34,6 @@ dirWatcher = DirWatcher(book_dir, BACKEND_HOST, db, pdf_scan)
 
 
 # requests____________________________________________________
-@app.route('/test', methods=["GET"])
-def test():
-    res = {
-        "output": "done"
-    }
-    return res
-
 
 @app.route('/books', methods=["POST"])
 def books():
@@ -52,6 +45,17 @@ def books():
     # Create a Response object with JSON data and content type
     response = Response(response=res, status=200, mimetype="application/json")
     return response
+
+
+@app.route('/books/current', methods=["POST"])
+def current_books():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    limit = data.get("limit", 20)
+    last_id = data.get("last_id", None)
+
+    res = db.get_currently_read_books(user_id, limit, last_id)
+    return res
 
 
 # book information with user config
@@ -67,7 +71,7 @@ def book(book_id):
 def pages(book_id, page_no):
     data = request.get_json()
     limit = data.get("limit", 10)
-    uid = data.get("uid",None)
+    uid = data.get("uid", None)
     filter_book = db.get_book(book_id=book_id)
     if filter_book:
         total_page = filter_book.get("page_no", 0)
@@ -83,5 +87,58 @@ def pages(book_id, page_no):
         return []
 
 
+@app.route('/login', methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username", None)
+    password = data.get("password", None)
+
+    res = db.get_user(username, password)
+    if res:
+        return res
+    else:
+        return {"_id": False}
+
+
+@app.route('/users', methods=["POST"])
+def get_users():
+    data = request.get_json()
+    uid = data.get("uid", None)
+    res = db.get_users()
+    return res
+
+
+@app.route('/users/create', methods=["POST"])
+def create_user():
+    data = request.get_json()
+    username = data.get("username", None)
+    password = data.get("password", None)
+    is_admin = data.get("is_admin", False)
+
+    res = db.create_user(username, password, is_admin)
+    return {"res": res}
+
+
+@app.route('/users/delete', methods=["POST"])
+def delete_user():
+    data = request.get_json()
+    user_id = data.get("uid", None)
+    res = db.delete_user(user_id)
+    return res
+
+
+# settings _______________________________________________
+# save user progress
+@app.route('/user/progress', methods=["POST"])
+def set_progress():
+    data = request.get_json()
+    user_id = data.get("user_id", None)
+    book_id = data.get("book_id", None)
+    progress = data.get("progress", 1)
+    res = db.set_progress(user_id, book_id, progress)
+    return {"res": res}
+
+
 if __name__ == '__main__':
+    new_user = db.create_user(username, password, True)
     app.run(use_reloader=True, debug=True, host='0.0.0.0', port=PORT, threaded=True)

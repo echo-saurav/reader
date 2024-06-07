@@ -5,11 +5,11 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { App, ConfigProvider, theme } from 'antd';
 import { AppContext, AppProvider } from './utils/AppProvider';
 import { useContext, } from 'react';
-import Pages from './components/pages/Pages';
+
 import Login from './components/Login';
 import NotFound from './components/NotFound';
-import ReadingView from './components/pages/ReadingView';
 import Read from './components/read/Read';
+import Settings from './components/Settings';
 
 function AppRouter() {
   const { uid, isDarkTheme } = useContext(AppContext);
@@ -39,7 +39,6 @@ function AppRouter() {
                 <Route path="/home/*" element={<Home />} />
                 <Route path="/book/:book_id" element={<Read />} />
                 <Route path="/book/:book_id/:page_no" element={<Read />} />
-                {/* <Route path="/settings" element={<Settings />} /> */}
                 <Route path="/login" element={<Login />} />
 
                 <Route path="*" element={<NotFound />} />

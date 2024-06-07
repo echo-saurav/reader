@@ -3,6 +3,8 @@ import { useContext, useEffect } from "react";
 import { ReadContext } from "./ReadContext";
 import { ArrowRightOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { setProgressOnBackend } from "../../utils/backend";
+import { AppContext } from "../../utils/AppProvider";
 
 
 
@@ -13,6 +15,7 @@ export default function PageProgressBar() {
         setLastPos,
         jumpOpen, setJumpOpen,
         setCurrentVisiblePage, setContents } = useContext(ReadContext)
+    const { uid } = useContext(AppContext)
     const spacing = "17px"
     const [jumpPage, setJumpPage] = useState(currentVisiblePage)
 
@@ -25,9 +28,14 @@ export default function PageProgressBar() {
         setJumpOpen(false)
     }
 
-    useEffect(()=>{
-        setJumpPage(currentVisiblePage)
-    },[currentVisiblePage])
+    useEffect(() => {
+        if (book_info.id && currentVisiblePage) {
+            setJumpPage(currentVisiblePage)
+
+            setProgressOnBackend(book_info.id, currentVisiblePage, uid)
+        }
+
+    }, [currentVisiblePage])
 
     return (
         <>

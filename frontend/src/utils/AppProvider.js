@@ -15,7 +15,7 @@ const pdfText_ = atomWithStorage('pdfText', true)
 const imageDarkMode_ = atomWithStorage("imageDarkMode", true)
 const imageClick_ = atomWithStorage('imageClick', false)
 const collapsed_ = atomWithStorage('sidebarCollapsed', false)
-const clickToLargeImage_ = atomWithStorage('clickToLargeImage',false)
+const clickToLargeImage_ = atomWithStorage('clickToLargeImage', false)
 
 export const AppProvider = ({ children }) => {
     const [isMobile, setMobile] = useState(true);
@@ -30,16 +30,16 @@ export const AppProvider = ({ children }) => {
     const [imageDarkMode, setImageDarkMode] = useAtom(imageDarkMode_)
     const [imageClick, setImageClick] = useAtom(imageClick_)
     const [collapsed, setCollapsed] = useAtom(collapsed_)
-    const [clickToLargeImage,setClickToLargeImage]= useAtom(clickToLargeImage_)
+    const [clickToLargeImage, setClickToLargeImage] = useAtom(clickToLargeImage_)
 
     const onToggleTheme = () => {
         setDarkTheme(!isDarkTheme)
-        
+
     };
 
-    const onLogin = (username, password) => {
-        setAdmin(true)
-        setUid("123")
+    const onLoginLocal = (isAdmin, uid) => {
+        setAdmin(isAdmin)
+        setUid(uid)
     };
 
     const onLogout = () => {
@@ -70,7 +70,7 @@ export const AppProvider = ({ children }) => {
         <AppContext.Provider value={{
             collapsed, setCollapsed,
             isDarkTheme, onToggleTheme, // theme
-            uid, isAdmin, onLogin, onLogout,// user management
+            uid, isAdmin, onLoginLocal, onLogout,// user management
             isMobile,
             fontSize, setFontSize,
             ocr, setOcr,
@@ -79,7 +79,7 @@ export const AppProvider = ({ children }) => {
             pdfText, setPdfText,
             imageDarkMode, setImageDarkMode,
             imageClick, setImageClick,
-            clickToLargeImage,setClickToLargeImage
+            clickToLargeImage, setClickToLargeImage
         }}>
             {children}
         </AppContext.Provider>

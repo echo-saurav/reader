@@ -2,7 +2,7 @@ import { FloatButton, Layout } from "antd";
 import { ReadContext, ReadProvider } from "./ReadContext";
 import { ArrowLeftOutlined, BookOutlined, HomeOutlined, MenuOutlined, SettingOutlined } from "@ant-design/icons"
 import { Affix, Badge, Button, Flex } from "antd"
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../utils/AppProvider";
 import Pagination from "./Pagination";
@@ -18,6 +18,7 @@ function Read() {
     const { showBadge } = useContext(ReadContext)
     const { isMobile } = useContext(AppContext)
     const navigate = useNavigate()
+
 
     const onBookmarkPage = () => {
 

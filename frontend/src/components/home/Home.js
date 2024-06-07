@@ -3,11 +3,12 @@ import { useContext, useState, } from "react";
 import { AppContext } from "../../utils/AppProvider";
 import { Content, Header } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import { BookOutlined, ClockCircleOutlined, HomeOutlined, MenuOutlined, SearchOutlined, SettingOutlined, StarOutlined, } from "@ant-design/icons";
+import { BarsOutlined, BookOutlined, ClockCircleOutlined, HomeOutlined, MenuOutlined, SearchOutlined, SettingOutlined, StarOutlined, TeamOutlined, } from "@ant-design/icons";
 import BottomBarMenu from "./bottombarMenu";
-import SidebarMenu from "./sidebarMenu";
+import SidebarMenu from "./SidebarMenu";
 import HomeRoutes from "./HomeRoutes";
 import { useNavigate } from "react-router-dom";
+import FloatingNavigation from "./FloatingNavigation";
 
 
 
@@ -41,10 +42,6 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
     const sidebarWidth = "250px"
     const sidebarWidthMin = "80px"
     const bottombarHeight = "70px"
-    const [openFloatButton, setOpenFloatButton] = useState(false)
-    const navigate = useNavigate()
-
-
 
     const getSidebarWidth = () => {
         if (collapsed) return sidebarWidthMin
@@ -90,18 +87,7 @@ function HomeLayout({ sidebarMenuEl, headerEl, bottomBarEl, contentEl }) {
                     {contentEl}
                 </Content>
             </Layout>
-            {isMobile && <FloatButton.Group
-                shape="square"
-                type="primary"
-                icon={<MenuOutlined />}
-                onClick={() => { setOpenFloatButton(!openFloatButton) }}
-                open={openFloatButton} trigger="click">
-                <FloatButton onClick={() => { navigate('/home'); setOpenFloatButton(false) }} icon={<HomeOutlined />} />
-                <FloatButton onClick={() => { navigate('/home/currentlyReading'); setOpenFloatButton(false) }} icon={<ClockCircleOutlined />} />
-                <FloatButton onClick={() => { navigate('/home/favorites'); setOpenFloatButton(false) }} icon={<StarOutlined />} />
-                <FloatButton onClick={() => { navigate('/home/bookmarks'); setOpenFloatButton(false) }} icon={<BookOutlined />} />
-                <FloatButton onClick={() => { navigate('/home/settings'); setOpenFloatButton(false) }} icon={<SettingOutlined />} />
-            </FloatButton.Group>}
+            <FloatingNavigation/>
 
 
         </Layout>
