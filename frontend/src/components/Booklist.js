@@ -78,8 +78,11 @@ export default function BookList() {
                         {!loadingCurrentlyReading && currentlyReading.map((item, key) =>
                             item.google_info && <BookCard
                                 id={item.id}
+                                // progress={item.settings ? item.settings[0].progress : 1}
+                                progress={300}
                                 title={item.google_info.title}
-                                description={item.google_info.description}
+                                description={'ldkjkfjk'}
+                                // description={item.google_info.description}
                                 key={key}
                                 cover={item.google_info.thumbnail} />
 
@@ -101,10 +104,14 @@ export default function BookList() {
             <Space align="start" wrap>
                 {bookList.map((item, key) =>
                     item.google_info && <BookCard
-                        title={item.google_info.title}
                         id={item.id}
+                        title={item.google_info.title}
                         description={item.google_info.description}
-                        key={key} cover={item.google_info.thumbnail} />
+                        cover={item.google_info.thumbnail}
+                        key={key}
+                        settings={item.settings}
+                        page_no={item.page_no}
+                    />
 
                 )}
             </Space>

@@ -32,7 +32,7 @@ export default function BookInfo() {
                 <Flex justify="center" align="center"  vertical >
                     <img
                         style={{ borderRadius: "10px", marginBottom: "20px" , minWidth:"200px", maxWidth:"300px"}}
-                        src={bookData.google_info && bookData.google_info.thumbnail}
+                        src={bookData.google_info && `${bookData.google_info.thumbnail}&zoom=2`}
                         alt={bookData.filename} />
                     <Button.Group style={{width:"90%"}}>
                         {/* <Button icon={<BookOutlined />} block>Read</Button>

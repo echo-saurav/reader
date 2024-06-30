@@ -185,7 +185,7 @@ export const setProgressOnBackend = async (book_id, progress, uid) => {
         "progress": progress
     })
 
-    return   fetch(`${process.env.REACT_APP_BACKEND}/user/progress`, {
+    return fetch(`${process.env.REACT_APP_BACKEND}/user/progress`, {
         method: "POST",
         body: payload,
         headers: {
@@ -193,8 +193,8 @@ export const setProgressOnBackend = async (book_id, progress, uid) => {
         }
 
     }).then(async (response) => {
-        
-        if (response){
+
+        if (response) {
             const j = await response.json()
             console.log("set progress", j)
             return j

@@ -28,7 +28,7 @@ export default function CurrentlyReading() {
 
                 console.log('c', res)
 
-                if (res) setBookList([...bookList, ...res])
+                // if (res) setBookList([...bookList, ...res])
                 setLoadingBooklist(false)
 
             })
