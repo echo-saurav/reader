@@ -1,10 +1,10 @@
-version: '3.9'
 
 services:
   reader-backend:
     container_name: reader-backend
-    # depends_on:
-    #   - reader-backend
+    restart: unless-stopped
+    depends_on:
+      - reader-db
     build:
       context: backend
       dockerfile: Dockerfile
@@ -12,12 +12,12 @@ services:
       - USER_NAME=demouser
       - USER_PASSWORD=demouser
       - BOOK_DIR=/books
-      - DB_HOST=reader-db
+      - DB_HOST=192.168.0.120
       - DB_PORT=27018
     ports:
       - "5500:5500"
     volumes:
-      - ./books:/books:ro
+      - ~/storage/public/books/:/books:ro
 
 
   reader-db:
@@ -36,13 +36,14 @@ services:
 
   reader-frontend:
     container_name: reader-frontend
-    # depends_on:
-    #  - reader-backend
+    restart: unless-stopped
+    depends_on:
+     - reader-backend
     build:
       context: frontend
       dockerfile: Dockerfile
       args:
-        - REACT_APP_BACKEND=http://192.168.0.102:5500/
+        - REACT_APP_BACKEND=http://192.168.0.120:5500/
     ports:
       - 6600:80
     environment:
